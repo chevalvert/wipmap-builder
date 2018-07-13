@@ -1,0 +1,29 @@
+@import 'sass/fonts';
+@import 'sass/reset';
+@import 'sass/helpers';
+
+$black: #262626;
+$white: #ffffff;
+$gray: rgb(180, 180, 180);
+$green: #56e271;
+$yellow: #f9d43a;
+$red: #ff6464;
+
+@import 'sass/base';
+
+@import 'components/log-screen';
+@import 'components/self-destructing-log-screen';
+
+// QuickSettings CSS override
+.qs_main {
+  &, * { font-family: 'Friction Mono'; }
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.13);
+
+  .qs_title_bar {
+    background-color: $black;
+    color: $white;
+  }
+
+  .qs_content { background-color: $gray; }
+  .qs_container { margin: 1px; }
+}
