@@ -1,4 +1,4 @@
-import L from 'loc'
+import localize from 'loc'
 import fps from 'fps-indicator'
 import FileSaver from 'file-saver'
 
@@ -15,6 +15,7 @@ import loading from 'utils/loading-wrapper'
 import filename from 'utils/filename'
 
 if (!window.isProduction) fps()
+const L = localize(window.isProduction && 'fr')
 
 let map
 
@@ -56,46 +57,49 @@ const settings = {
 
     renderPoisson: false,
     renderVoronoiCells: false,
-    renderVoronoiSites: false
+    renderVoronoiSites: false,
+    scale: 1
   }
 }
 
 const gui = GUI({
-  generation: [
+  [L`generation`]: [
     ['x', 'addNumber', [0, 100, settings.x, 1], updateSettings(settings, 'x')],
     ['y', 'addNumber', [0, 100, settings.y, 1], updateSettings(settings, 'y')],
 
-    ['vorowidth', 'addRange', [0, 10, settings.generation.width, 1], updateSettings(settings.generation, 'width')],
-    ['voroheight', 'addRange', [0, 10, settings.generation.height, 1], updateSettings(settings.generation, 'height')],
+    [L`vorowidth`, 'addRange', [0, 10, settings.generation.width, 1], updateSettings(settings.generation, 'width')],
+    [L`voroheight`, 'addRange', [0, 10, settings.generation.height, 1], updateSettings(settings.generation, 'height')],
 
-    ['jitter', 'addRange', [0, 1, settings.generation.jitter, 0.01], updateSettings(settings.generation, 'jitter')],
-    ['distortion', 'addRange', [0, 1, settings.generation.distortion, 0.01], updateSettings(settings.generation, 'distortion')],
-    ['gradient', 'addRange', [0, 1, settings.generation.gradient, 0.01], updateSettings(settings.generation, 'gradient')],
-    ['poissonDensity', 'addRange', [0, 1, settings.generation.poissonDensity, 0.01], updateSettings(settings.generation, 'poissonDensity')],
+    [L`jitter`, 'addRange', [0, 1, settings.generation.jitter, 0.01], updateSettings(settings.generation, 'jitter')],
+    [L`distortion`, 'addRange', [0, 1, settings.generation.distortion, 0.01], updateSettings(settings.generation, 'distortion')],
+    [L`gradient`, 'addRange', [0, 1, settings.generation.gradient, 0.01], updateSettings(settings.generation, 'gradient')],
+    [L`poissonDensity`, 'addRange', [0, 1, settings.generation.poissonDensity, 0.01], updateSettings(settings.generation, 'poissonDensity')],
 
-    ['water', 'addRange', [0, 1, settings.generation.probablities.water, 0.01], updateSettings(settings.generation.probablities, 'water')]
+    [L`water`, 'addRange', [0, 1, settings.generation.probablities.water, 0.01], updateSettings(settings.generation.probablities, 'water')]
   ],
-  rendering: [
-    ['width', 'addNumber', [0, Number.POSITIVE_INFINITY, canvas.width, 1], v => updateCanvasSize({ width: v })],
-    ['height', 'addNumber', [0, Number.POSITIVE_INFINITY, canvas.height, 1], v => updateCanvasSize({ height: v })],
-    ...Object.entries(settings.rendering).map(([key, value]) => (
-      [key, 'addBoolean', [value], updateSettings(settings.rendering, key, false)]
-    ))
+  [L`rendering`]: [
+    [L`width`, 'addNumber', [0, Number.POSITIVE_INFINITY, canvas.width, 1], v => updateCanvasSize({ width: v })],
+    [L`height`, 'addNumber', [0, Number.POSITIVE_INFINITY, canvas.height, 1], v => updateCanvasSize({ height: v })],
+    [L`drawBoundingBox`, 'addBoolean', [settings.rendering.drawBoundingBox], updateSettings(settings.rendering, 'drawBoundingBox', false)],
+    [L`renderBiomesTexture`, 'addBoolean', [settings.rendering.renderBiomesTexture], updateSettings(settings.rendering, 'renderBiomesTexture', false)],
+    [L`renderPoisson`, 'addBoolean', [settings.rendering.renderPoisson], updateSettings(settings.rendering, 'renderPoisson', false)],
+    [L`renderVoronoiCells`, 'addBoolean', [settings.rendering.renderVoronoiCells], updateSettings(settings.rendering, 'renderVoronoiCells', false)],
+    [L`renderVoronoiSites`, 'addBoolean', [settings.rendering.renderVoronoiSites], updateSettings(settings.rendering, 'renderVoronoiSites', false)],
+    [L`scale`, 'addRange', [0, 10, settings.rendering.scale, 0.01], updateSettings(settings.rendering, 'scale')]
   ],
-  textures: [
+  [L`textures`]: [
     // TODO: custom QS.addJSON: like addTextArea but with parsing validation (css .is-valid)
-    ['json', 'addTextArea', [''], textures.fromJSON],
-    ['sprites', 'addTextArea', [''], sprites.updateFromFilenames]
+    [L`json`, 'addTextArea', [''], textures.fromJSON],
+    [L`sprites`, 'addTextArea', [''], sprites.updateFromFilenames]
   ],
-  exports: [
-    ['save as PNG', 'addButton', [], () => map.renderer.toBlob(blob => FileSaver.saveAs(blob, filename('wipmap')))]
+  [L`export`]: [
+    [L`save as PNG`, 'addButton', [], () => map.renderer.toBlob(blob => FileSaver.saveAs(blob, filename('wipmap')))]
   ]
 }, document.body)
 
 uploader({
   dropzone: document.documentElement,
   callback: (image, filename) => {
-    console.log(image, filename)
     sprites.add(image, filename)
     gui.panels.textures.setValue('sprites', sprites.filenames.join('\n'))
   }
