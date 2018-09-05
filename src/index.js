@@ -1,5 +1,6 @@
 import L from 'loc'
 import fps from 'fps-indicator'
+import FileSaver from 'file-saver'
 
 import Renderer from 'wipmap-renderer'
 import generate from 'wipmap-generate'
@@ -11,6 +12,7 @@ import textures from 'controllers/textures-manager'
 
 import error from 'utils/error'
 import loading from 'utils/loading-wrapper'
+import filename from 'utils/filename'
 
 if (!window.isProduction) fps()
 
@@ -71,7 +73,7 @@ const gui = GUI({
     ['gradient', 'addRange', [0, 1, settings.generation.gradient, 0.01], updateSettings(settings.generation, 'gradient')],
     ['poissonDensity', 'addRange', [0, 1, settings.generation.poissonDensity, 0.01], updateSettings(settings.generation, 'poissonDensity')],
 
-    ['water', 'addRange', [0, 1, settings.generation.probablities.water, 0.01], updateSettings(settings.generation.probablities, 'water')],
+    ['water', 'addRange', [0, 1, settings.generation.probablities.water, 0.01], updateSettings(settings.generation.probablities, 'water')]
   ],
   rendering: [
     ['width', 'addNumber', [0, Number.POSITIVE_INFINITY, canvas.width, 1], v => updateCanvasSize({ width: v })],
@@ -84,6 +86,9 @@ const gui = GUI({
     // TODO: custom QS.addJSON: like addTextArea but with parsing validation (css .is-valid)
     ['json', 'addTextArea', [''], textures.fromJSON],
     ['sprites', 'addTextArea', [''], sprites.updateFromFilenames]
+  ],
+  exports: [
+    ['save as PNG', 'addButton', [], () => map.renderer.toBlob(blob => FileSaver.saveAs(blob, filename('wipmap')))]
   ]
 }, document.body)
 
