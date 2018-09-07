@@ -14,6 +14,9 @@ import error from 'utils/error'
 import loading from 'utils/loading-wrapper'
 import filename from 'utils/filename'
 
+import flatten from 'utils/array-flatten'
+import unique from 'utils/array-unique'
+
 if (!window.isProduction) fps()
 const L = localize(window.isProduction && 'fr')
 
@@ -60,9 +63,10 @@ const settings = {
     renderVoronoiSites: false,
     scale: 1,
     colors: {
-      voronoi: 'black',
-      'PLAINS': 'green',
-      'WATER': 'blue'
+      background: '#ffffff',
+      voronoi: '#000000',
+      'PLAINS': '#FF0000',
+      // 'WATER': '#0000FF'
     }
   }
 }
@@ -90,7 +94,14 @@ const gui = GUI({
     [L`renderPoisson`, 'addBoolean', [settings.rendering.renderPoisson], updateSettings(settings.rendering, 'renderPoisson', false)],
     [L`renderVoronoiCells`, 'addBoolean', [settings.rendering.renderVoronoiCells], updateSettings(settings.rendering, 'renderVoronoiCells', false)],
     [L`renderVoronoiSites`, 'addBoolean', [settings.rendering.renderVoronoiSites], updateSettings(settings.rendering, 'renderVoronoiSites', false)],
-    [L`scale`, 'addNumber', [0, Number.POSITIVE_INFINITY, settings.rendering.scale, 0.01], updateSettings(settings.rendering, 'scale')]
+    [L`scale`, 'addNumber', [0, Number.POSITIVE_INFINITY, settings.rendering.scale, 0.01], updateSettings(settings.rendering, 'scale')],
+    [L`voronoiColor`, 'addColor', [settings.rendering.colors.voronoi], updateSettings(settings.rendering.colors, 'voronoi')],
+    [L`backgroundColor`, 'addColor', [settings.rendering.colors.background], updateSettings(settings.rendering.colors, 'background')]
+  ],
+  [L`legend`]: [
+    ...[...unique(flatten(settings.generation.biomesMap)), 'WATER'].map(biome => {
+      return [biome, 'addColor', [settings.rendering.colors[biome]], updateSettings(settings.rendering.colors, biome)]
+    })
   ],
   [L`textures`]: [
     // TODO: custom QS.addJSON: like addTextArea but with parsing validation (css .is-valid)
