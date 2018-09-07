@@ -45,9 +45,9 @@ const settings = {
     },
 
     biomesMap: [
-      ['PLAINS', 'PLAINS', 'PLAINS'],
-      ['PLAINS', 'PLAINS', 'PLAINS'],
-      ['PLAINS', 'PLAINS', 'PLAINS']
+      ['MOUNTAINS', 'FOREST', 'SWAMP'],
+      ['MOUNTAINS', 'PLAINS', 'FOREST'],
+      ['PLAINS', 'PLAINS', 'DESERT']
     ]
   },
   rendering: {
@@ -66,7 +66,8 @@ const settings = {
       background: '#ffffff',
       voronoi: '#000000',
       'PLAINS': '#FF0000',
-      // 'WATER': '#0000FF'
+      'WATER': '#0000FF',
+      'FOREST': '#00FFFF'
     }
   }
 }
@@ -94,13 +95,13 @@ const gui = GUI({
     [L`renderPoisson`, 'addBoolean', [settings.rendering.renderPoisson], updateSettings(settings.rendering, 'renderPoisson', false)],
     [L`renderVoronoiCells`, 'addBoolean', [settings.rendering.renderVoronoiCells], updateSettings(settings.rendering, 'renderVoronoiCells', false)],
     [L`renderVoronoiSites`, 'addBoolean', [settings.rendering.renderVoronoiSites], updateSettings(settings.rendering, 'renderVoronoiSites', false)],
-    [L`scale`, 'addNumber', [0, Number.POSITIVE_INFINITY, settings.rendering.scale, 0.01], updateSettings(settings.rendering, 'scale')],
-    [L`voronoiColor`, 'addColor', [settings.rendering.colors.voronoi], updateSettings(settings.rendering.colors, 'voronoi')],
-    [L`backgroundColor`, 'addColor', [settings.rendering.colors.background], updateSettings(settings.rendering.colors, 'background')]
+    [L`scale`, 'addNumber', [0, Number.POSITIVE_INFINITY, settings.rendering.scale, 0.01], updateSettings(settings.rendering, 'scale', false)],
+    [L`voronoiColor`, 'addColor', [settings.rendering.colors.voronoi], updateSettings(settings.rendering.colors, 'voronoi', false)],
+    [L`backgroundColor`, 'addColor', [settings.rendering.colors.background], updateSettings(settings.rendering.colors, 'background', false)]
   ],
   [L`legend`]: [
     ...[...unique(flatten(settings.generation.biomesMap)), 'WATER'].map(biome => {
-      return [biome, 'addColor', [settings.rendering.colors[biome]], updateSettings(settings.rendering.colors, biome)]
+      return [biome, 'addColor', [settings.rendering.colors[biome]], updateSettings(settings.rendering.colors, biome, false)]
     })
   ],
   [L`textures`]: [
