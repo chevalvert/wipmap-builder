@@ -11,7 +11,6 @@ export default {
   fromJSON: json => {
     try {
       textures = JSON.parse(typeof json === 'string' ? json : JSON.stringify(json))
-      console.log(textures)
       events.emit(NS + 'update', textures)
     } catch (e) {
       console.warn(e)

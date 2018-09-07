@@ -9,6 +9,7 @@ import GUI from 'controllers/gui'
 import uploader from 'controllers/images-uploader'
 import sprites from 'controllers/sprites-manager'
 import textures from 'controllers/textures-manager'
+import hotkeys from 'hotkeys-js'
 
 import error from 'utils/error'
 import loading from 'utils/loading-wrapper'
@@ -121,6 +122,8 @@ const gui = GUI({
     }]
   ]
 }, document.body)
+
+hotkeys('cmd+h,ctrl+h', gui.toggle)
 
 uploader({
   dropzone: document.documentElement,

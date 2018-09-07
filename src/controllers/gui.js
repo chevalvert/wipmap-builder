@@ -8,6 +8,7 @@ import makeAutoHeight from 'utils/make-textarea-autoheight'
 export default (tree, DOMContainer = document.body) => {
   const panels = {}
   let enabled = false
+  let visible = true
 
   const qsStore = QuickSettings.create(0, 0).hide()
 
@@ -54,6 +55,7 @@ export default (tree, DOMContainer = document.body) => {
 
     show,
     hide,
+    toggle: () => visible ? hide() : show(),
 
     toJSON: () => Object.entries(panels).reduce((json, [name, panel]) => {
       json[name] = panel.getValuesAsJSON()
@@ -92,10 +94,12 @@ export default (tree, DOMContainer = document.body) => {
 
   function show () {
     Object.values(panels).forEach(panel => panel.show())
+    visible = true
   }
 
   function hide () {
     Object.values(panels).forEach(panel => panel.hide())
+    visible = false
   }
 
   function addJSONInput (panel, name, callback = noop) {
