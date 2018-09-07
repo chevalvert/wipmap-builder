@@ -124,17 +124,18 @@ const gui = GUI({
   ]
 }, document.body)
 
-hotkeys('w', () => gui.panels.rendering.setValue(L`renderVoronoiCells`, !settings.rendering.renderVoronoiCells))
-hotkeys('cmd+h,ctrl+h', gui.toggle)
-hotkeys('left', () => gui.panels.generation.setValue('x', Math.max(0, settings.x - 1)))
-hotkeys('up', () => gui.panels.generation.setValue('y', Math.max(0, settings.y - 1)))
-hotkeys('right', () => gui.panels.generation.setValue('x', settings.x + 1))
-hotkeys('down', () => gui.panels.generation.setValue('y', settings.y + 1))
+hotkeys('h', gui.toggle)
+hotkeys('w', () => gui.panels[L`rendering`].setValue(L`renderVoronoiCells`, !settings.rendering.renderVoronoiCells))
 
-hotkeys('shift+left', () => gui.panels.generation.setValue('x', Math.max(0, settings.x - Math.floor(settings.generation.width / 2))))
-hotkeys('shift+up', () => gui.panels.generation.setValue('y', Math.max(0, settings.y - Math.floor(settings.generation.height / 2))))
-hotkeys('shift+right', () => gui.panels.generation.setValue('x', settings.x + Math.floor(settings.generation.width / 2)))
-hotkeys('shift+down', () => gui.panels.generation.setValue('y', settings.y + Math.floor(settings.generation.height / 2)))
+hotkeys('left', () => gui.panels[L`generation`].setValue('x', Math.max(0, settings.x - 1)))
+hotkeys('up', () => gui.panels[L`generation`].setValue('y', Math.max(0, settings.y - 1)))
+hotkeys('right', () => gui.panels[L`generation`].setValue('x', settings.x + 1))
+hotkeys('down', () => gui.panels[L`generation`].setValue('y', settings.y + 1))
+
+hotkeys('shift+left', () => gui.panels[L`generation`].setValue('x', Math.max(0, settings.x - Math.floor(settings.generation.width / 2))))
+hotkeys('shift+up', () => gui.panels[L`generation`].setValue('y', Math.max(0, settings.y - Math.floor(settings.generation.height / 2))))
+hotkeys('shift+right', () => gui.panels[L`generation`].setValue('x', settings.x + Math.floor(settings.generation.width / 2)))
+hotkeys('shift+down', () => gui.panels[L`generation`].setValue('y', settings.y + Math.floor(settings.generation.height / 2)))
 
 uploader({
   dropzone: document.documentElement,
