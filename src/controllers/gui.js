@@ -1,5 +1,7 @@
 import QuickSettings from 'quicksettings'
 import noop from 'utils/noop'
+import makeIndetable from 'utils/make-textarea-indentable'
+import makeAutoHeight from 'utils/make-textarea-autoheight'
 
 /* global Blob, FileReader */
 
@@ -16,7 +18,8 @@ export default (tree, DOMContainer = document.body) => {
 
     // Adding the controls to the panel
     panelControls.forEach(([name, method, args, callback]) => {
-      panel[method](name, ...args, callback)
+      if (method === 'addJSON') addJSONInput(panel, name, callback)
+      else panel[method](name, ...args, callback)
     })
 
     // NOTE: implementing custom collapsing behavior with persistent storage capabilities
@@ -93,5 +96,34 @@ export default (tree, DOMContainer = document.body) => {
 
   function hide () {
     Object.values(panels).forEach(panel => panel.hide())
+  }
+
+  function addJSONInput (panel, name, callback = noop) {
+    panel.addTextArea(name, '{\n}', string => {
+      try {
+        const json = JSON.parse(string)
+        element.classList.remove('is-invalid')
+        callback(json)
+      } catch (e) {
+        element.classList.add('is-invalid')
+      }
+    })
+
+    const element = panel._controls[name].control
+    if (!element) return
+    element.classList.add('qs_json')
+
+    qsStore.addText(name + '-size', element.offsetWidth, size => {
+      const [w, h] = size.split(';')
+      element.style.width = w + 'px'
+      element.style.height = h + 'px'
+    })
+
+    element.addEventListener('mouseup', () => {
+      qsStore.setValue(name + '-size', element.offsetWidth + ';' + element.offsetHeight)
+    })
+
+    makeIndetable(element, 2)
+    makeAutoHeight(element, () => qsStore.setValue(name + '-size', element.offsetWidth + ';' + element.offsetHeight))
   }
 }

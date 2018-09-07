@@ -16,8 +16,11 @@ $red: #ff6464;
 
 // QuickSettings CSS override
 .qs_main {
-  &, * { font-family: 'Friction Mono'; }
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.13);
+  min-width: 20rem;
+  width: auto; // Allows for resizing of textarea children
+
+  &, * { font-family: 'Friction Mono'; }
 
   .qs_title_bar {
     background-color: $black;
@@ -26,4 +29,26 @@ $red: #ff6464;
 
   .qs_content { background-color: $gray; }
   .qs_container { margin: 1px; }
+  .qs_button {
+    width: 100%;
+    text-align: left;
+  }
+
+  .qs_textarea {
+    height: auto;
+    white-space: nowrap;
+  }
+
+  .qs_json {
+    min-width: 400px;
+    &.is-invalid {
+      outline: 2px solid $red;
+      outline-offset: -0.5ch;
+    }
+    background: $black;
+    color: $white;
+    font-size: larger;
+    resize: both;
+    padding: 1ch;
+  }
 }

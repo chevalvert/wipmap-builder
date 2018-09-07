@@ -90,11 +90,11 @@ const gui = GUI({
     [L`renderPoisson`, 'addBoolean', [settings.rendering.renderPoisson], updateSettings(settings.rendering, 'renderPoisson', false)],
     [L`renderVoronoiCells`, 'addBoolean', [settings.rendering.renderVoronoiCells], updateSettings(settings.rendering, 'renderVoronoiCells', false)],
     [L`renderVoronoiSites`, 'addBoolean', [settings.rendering.renderVoronoiSites], updateSettings(settings.rendering, 'renderVoronoiSites', false)],
-    [L`scale`, 'addRange', [0, 10, settings.rendering.scale, 0.01], updateSettings(settings.rendering, 'scale')]
+    [L`scale`, 'addNumber', [0, Number.POSITIVE_INFINITY, settings.rendering.scale, 0.01], updateSettings(settings.rendering, 'scale')]
   ],
   [L`textures`]: [
     // TODO: custom QS.addJSON: like addTextArea but with parsing validation (css .is-valid)
-    [L`json`, 'addTextArea', [''], textures.fromJSON],
+    [L`json`, 'addJSON', [''], textures.fromJSON],
     [L`sprites`, 'addTextArea', [''], sprites.updateFromFilenames]
   ],
   [L`export`]: [
