@@ -1,4 +1,7 @@
 import QuickSettings from 'quicksettings'
+import noop from 'utils/noop'
+
+/* global Blob, FileReader */
 
 export default (tree, DOMContainer = document.body) => {
   const panels = {}
@@ -47,7 +50,40 @@ export default (tree, DOMContainer = document.body) => {
     disable () { enabled = false },
 
     show,
-    hide
+    hide,
+
+    toJSON: () => Object.entries(panels).reduce((json, [name, panel]) => {
+      json[name] = panel.getValuesAsJSON()
+      return json
+    }, {}),
+
+    toBlob: () => new Blob([JSON.stringify(api.toJSON(), null, window.isProduction ? 0 : 2)], { type: 'application/json' }),
+
+    fromJSON: json => {
+      try {
+        json = JSON.parse(typeof json === 'string' ? json : JSON.stringify(json))
+        Object.entries(panels).forEach(([name, panel]) => {
+          if (json.hasOwnProperty(name)) panel.setValuesFromJSON(json[name])
+        })
+      } catch (e) {
+        console.warn(e)
+      }
+    },
+
+    fromFile: (file, callback = noop) => {
+      if (!file) return
+      const fReader = new FileReader()
+      fReader.onload = () => {
+        try {
+          const json = JSON.parse(fReader.result)
+          api.fromJSON(json)
+          callback()
+        } catch (e) {
+          console.warn(e)
+        }
+      }
+      fReader.readAsText(file)
+    }
   }
   return api
 

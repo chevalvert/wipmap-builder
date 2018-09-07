@@ -58,7 +58,12 @@ const settings = {
     renderPoisson: false,
     renderVoronoiCells: false,
     renderVoronoiSites: false,
-    scale: 1
+    scale: 1,
+    colors: {
+      voronoi: 'black',
+      'PLAINS': 'green',
+      'WATER': 'blue'
+    }
   }
 }
 
@@ -93,7 +98,15 @@ const gui = GUI({
     [L`sprites`, 'addTextArea', [''], sprites.updateFromFilenames]
   ],
   [L`export`]: [
-    [L`save as PNG`, 'addButton', [], () => map.renderer.toBlob(blob => FileSaver.saveAs(blob, filename('wipmap')))]
+    [L`save as PNG`, 'addButton', [], () => map.renderer.toBlob(blob => FileSaver.saveAs(blob, filename('wipmap')))],
+    [L`save as JSON`, 'addButton', [], () => FileSaver.saveAs(gui.toBlob(), filename('wipmap'))],
+    [L`load json`, 'addFileChooser', [L`browse file`, 'application/json'], file => {
+      gui.disable()
+      gui.fromFile(file, () => {
+        gui.enable()
+        updateMap()
+      })
+    }]
   ]
 }, document.body)
 
