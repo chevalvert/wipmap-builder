@@ -10,6 +10,7 @@ export default (tree, DOMContainer = document.body) => {
   let enabled = false
   let visible = true
 
+  QuickSettings.useExtStyleSheet()
   const qsStore = QuickSettings.create(0, 0).hide()
 
   Object.entries(tree).forEach(([title, panelControls]) => {
