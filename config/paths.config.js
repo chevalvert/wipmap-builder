@@ -3,7 +3,7 @@ const appEnv = process.env.APP_ENV || process.env.NODE_ENV || 'development'
 
 let publicPaths = {
   development: '/',
-  ghpages: '/repository/',
+  ghpages: '/wipmap-builder/',
   preprod: '/',
   production: '/'
 }
