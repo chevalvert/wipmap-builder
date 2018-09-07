@@ -30,6 +30,7 @@ const settings = {
   x: 0,
   y: 0,
   generation: {
+    seed: 'wipmap',
     width: 3,
     height: 3,
     decimals: 3,
@@ -48,7 +49,7 @@ const settings = {
     biomesMap: [
       ['MOUNTAINS', 'FOREST', 'SWAMP'],
       ['MOUNTAINS', 'PLAINS', 'FOREST'],
-      ['PLAINS', 'PLAINS', 'DESERT']
+      ['SWAMP', 'DESERT', 'DESERT']
     ]
   },
   rendering: {
@@ -65,7 +66,7 @@ const settings = {
     scale: 1,
     colors: {
       background: '#ffffff',
-      voronoi: '#000000',
+      voronoi: '#AAAAAA',
       'PLAINS': '#FF0000',
       'WATER': '#0000FF',
       'FOREST': '#00FFFF'
@@ -75,16 +76,17 @@ const settings = {
 
 const gui = GUI({
   [L`generation`]: [
+    ['seed', 'addText', [settings.generation.seed], updateSettings(settings.generation, 'seed')],
     ['x', 'addNumber', [0, 100, settings.x, 1], updateSettings(settings, 'x')],
     ['y', 'addNumber', [0, 100, settings.y, 1], updateSettings(settings, 'y')],
 
-    [L`vorowidth`, 'addRange', [0, 10, settings.generation.width, 1], updateSettings(settings.generation, 'width')],
-    [L`voroheight`, 'addRange', [0, 10, settings.generation.height, 1], updateSettings(settings.generation, 'height')],
+    [L`vorowidth`, 'addRange', [2, 20, settings.generation.width, 1], updateSettings(settings.generation, 'width')],
+    [L`voroheight`, 'addRange', [2, 20, settings.generation.height, 1], updateSettings(settings.generation, 'height')],
 
     [L`jitter`, 'addRange', [0, 1, settings.generation.jitter, 0.01], updateSettings(settings.generation, 'jitter')],
     [L`distortion`, 'addRange', [0, 1, settings.generation.distortion, 0.01], updateSettings(settings.generation, 'distortion')],
     [L`gradient`, 'addRange', [0, 1, settings.generation.gradient, 0.01], updateSettings(settings.generation, 'gradient')],
-    [L`poissonDensity`, 'addRange', [0, 1, settings.generation.poissonDensity, 0.01], updateSettings(settings.generation, 'poissonDensity')],
+    [L`poissonDensity`, 'addRange', [0, 10, settings.generation.poissonDensity, 0.01], updateSettings(settings.generation, 'poissonDensity')],
 
     [L`water`, 'addRange', [0, 1, settings.generation.probablities.water, 0.01], updateSettings(settings.generation.probablities, 'water')]
   ],
@@ -106,7 +108,6 @@ const gui = GUI({
     })
   ],
   [L`textures`]: [
-    // TODO: custom QS.addJSON: like addTextArea but with parsing validation (css .is-valid)
     [L`json`, 'addJSON', [''], textures.fromJSON],
     [L`sprites`, 'addTextArea', [''], sprites.updateFromFilenames]
   ],
@@ -123,7 +124,17 @@ const gui = GUI({
   ]
 }, document.body)
 
+hotkeys('w', () => gui.panels.rendering.setValue(L`renderVoronoiCells`, !settings.rendering.renderVoronoiCells))
 hotkeys('cmd+h,ctrl+h', gui.toggle)
+hotkeys('left', () => gui.panels.generation.setValue('x', Math.max(0, settings.x - 1)))
+hotkeys('up', () => gui.panels.generation.setValue('y', Math.max(0, settings.y - 1)))
+hotkeys('right', () => gui.panels.generation.setValue('x', settings.x + 1))
+hotkeys('down', () => gui.panels.generation.setValue('y', settings.y + 1))
+
+hotkeys('shift+left', () => gui.panels.generation.setValue('x', Math.max(0, settings.x - Math.floor(settings.generation.width / 2))))
+hotkeys('shift+up', () => gui.panels.generation.setValue('y', Math.max(0, settings.y - Math.floor(settings.generation.height / 2))))
+hotkeys('shift+right', () => gui.panels.generation.setValue('x', settings.x + Math.floor(settings.generation.width / 2)))
+hotkeys('shift+down', () => gui.panels.generation.setValue('y', settings.y + Math.floor(settings.generation.height / 2)))
 
 uploader({
   dropzone: document.documentElement,
