@@ -1,6 +1,8 @@
 import localize from 'loc'
+
 import fps from 'fps-indicator'
 import FileSaver from 'file-saver'
+import Color from 'color'
 
 import Renderer from 'wipmap-renderer'
 import generate from 'wipmap-generate'
@@ -47,9 +49,9 @@ const settings = {
     },
 
     biomesMap: [
-      ['MOUNTAINS', 'FOREST', 'SWAMP'],
+      ['SWAMP', 'FOREST', 'SWAMP'],
       ['MOUNTAINS', 'PLAINS', 'FOREST'],
-      ['SWAMP', 'DESERT', 'DESERT']
+      ['MOUNTAINS', 'DESERT', 'DESERT']
     ]
   },
   rendering: {
@@ -100,7 +102,8 @@ const gui = GUI({
     [L`renderVoronoiSites`, 'addBoolean', [settings.rendering.renderVoronoiSites], updateSettings(settings.rendering, 'renderVoronoiSites', false)],
     [L`scale`, 'addNumber', [0, Number.POSITIVE_INFINITY, settings.rendering.scale, 0.01], updateSettings(settings.rendering, 'scale', false)],
     [L`voronoiColor`, 'addColor', [settings.rendering.colors.voronoi], updateSettings(settings.rendering.colors, 'voronoi', false)],
-    [L`backgroundColor`, 'addColor', [settings.rendering.colors.background], updateSettings(settings.rendering.colors, 'background', false)]
+    [L`backgroundColor`, 'addColor', [settings.rendering.colors.background], updateSettings(settings.rendering.colors, 'background', false)],
+    [L`backgroundAlpha`, 'addRange', [0, 255, 255, 1], a => updateSettings(settings.rendering.colors, 'background', false)(Color(settings.rendering.colors.background).alpha(a / 255).string())]
   ],
   [L`legend`]: [
     ...[...unique(flatten(settings.generation.biomesMap)), 'WATER'].map(biome => {
