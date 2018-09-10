@@ -22,7 +22,7 @@ import flatten from 'utils/array-flatten'
 import unique from 'utils/array-unique'
 
 if (!window.isProduction) fps()
-const L = localize('fr')
+const L = localize(window.lang)
 
 let map
 
@@ -53,7 +53,7 @@ const settings = {
     ]
   },
   rendering: {
-    smooth: false,
+    smooth: true,
     forceUpdate: true,
     debugPerf: !window.isProduction,
     drawBoundingBox: false,

@@ -20,6 +20,7 @@ locales.fr['textures'] = 'textures'
 locales.fr['export'] = 'export'
 locales.fr['vorowidth'] = 'largeur de la grille'
 locales.fr['voroheight'] = 'hauteur de la grille'
+locales.fr['jitter'] = ''
 
 locales.fr['sprites.undefined'] = 'Glissez-déposez vos fichiers'
 
