@@ -7,6 +7,7 @@ import Color from 'color'
 import Renderer from 'wipmap-renderer'
 import generate from 'wipmap-generate'
 
+import canvas from 'controllers/canvas'
 import GUI from 'controllers/gui'
 import uploader from 'controllers/images-uploader'
 import sprites from 'controllers/sprites-manager'
@@ -24,9 +25,6 @@ if (!window.isProduction) fps()
 const L = localize('fr')
 
 let map
-
-const canvas = document.querySelector('.map-canvas')
-updateCanvasSize({ width: 800, height: 600 })
 
 const settings = {
   x: 0,
@@ -97,8 +95,8 @@ const gui = GUI({
     [L`water`, 'addRange', [0, 1, settings.generation.probablities.water, 0.01], updateSettings(settings.generation.probablities, 'water')]
   ],
   [L`rendering`]: [
-    [L`width`, 'addNumber', [0, Number.POSITIVE_INFINITY, canvas.width, 1], v => updateCanvasSize({ width: v })],
-    [L`height`, 'addNumber', [0, Number.POSITIVE_INFINITY, canvas.height, 1], v => updateCanvasSize({ height: v })],
+    [L`width`, 'addNumber', [0, Number.POSITIVE_INFINITY, canvas.width, 1], v => canvas.resize({ width: v })],
+    [L`height`, 'addNumber', [0, Number.POSITIVE_INFINITY, canvas.height, 1], v => canvas.resize({ height: v })],
     [L`smooth`, 'addBoolean', [settings.rendering.smooth], updateSettings(settings.rendering, 'smooth', false)],
     [L`renderBiomesTexture`, 'addBoolean', [settings.rendering.renderBiomesTexture], updateSettings(settings.rendering, 'renderBiomesTexture', false)],
     [L`renderPoisson`, 'addBoolean', [settings.rendering.renderPoisson], updateSettings(settings.rendering, 'renderPoisson', false)],
@@ -128,6 +126,9 @@ const gui = GUI({
         updateMap()
       })
     }]
+  ],
+  [L`view`]: [
+    [L`canvas.scale`, 'addRange', [0, 1, 1, 0.01], canvas.scale, -1]
   ]
 }, document.body)
 
@@ -156,6 +157,7 @@ loading(L`loading`, [
     gui.enable()
     gui.show()
     gui.panels[L`textures`].setValue(L`sprites`, sprites.toHTML(L`sprites.undefined`))
+    canvas.watch(() => updateMap(false))
     sprites.watch(() => {
       gui.panels[L`textures`].setValue(L`sprites`, sprites.toHTML(L`sprites.undefined`))
       updateMap(true)
@@ -172,19 +174,11 @@ function updateSettings (o, key, regenerate = true) {
   }
 }
 
-function updateCanvasSize ({ width, height } = {}) {
-  canvas.width = width || canvas.width
-  canvas.height = height || canvas.height
-  canvas.style.width = canvas.width + 'px'
-  canvas.style.height = canvas.height + 'px'
-  updateMap(false)
-}
-
 function updateMap (regenerate = true) {
   if (!regenerate) return map && map.renderer.update([], settings.rendering)
 
   map = generate(settings.x, settings.y, settings.generation)
-  map.renderer = new Renderer(canvas, {
+  map.renderer = new Renderer(canvas.element, {
     map,
     seed: map.seed,
     textures: textures.toObject(),
