@@ -21,7 +21,7 @@ import flatten from 'utils/array-flatten'
 import unique from 'utils/array-unique'
 
 if (!window.isProduction) fps()
-const L = localize(window.isProduction && 'fr')
+const L = localize('fr')
 
 let map
 
@@ -55,6 +55,7 @@ const settings = {
     ]
   },
   rendering: {
+    smooth: false,
     forceUpdate: true,
     debugPerf: !window.isProduction,
     drawBoundingBox: false,
@@ -69,9 +70,12 @@ const settings = {
     colors: {
       background: '#ffffff',
       voronoi: '#AAAAAA',
-      'PLAINS': '#FF0000',
-      'WATER': '#0000FF',
-      'FOREST': '#00FFFF'
+      'SWAMP': '#cc65bb',
+      'FOREST': '#1dca63',
+      'MOUNTAINS': '#a1b575',
+      'PLAINS': '#abf1ac',
+      'DESERT': '#fffc92',
+      'WATER': '#85e3ff'
     }
   }
 }
@@ -95,7 +99,7 @@ const gui = GUI({
   [L`rendering`]: [
     [L`width`, 'addNumber', [0, Number.POSITIVE_INFINITY, canvas.width, 1], v => updateCanvasSize({ width: v })],
     [L`height`, 'addNumber', [0, Number.POSITIVE_INFINITY, canvas.height, 1], v => updateCanvasSize({ height: v })],
-    [L`drawBoundingBox`, 'addBoolean', [settings.rendering.drawBoundingBox], updateSettings(settings.rendering, 'drawBoundingBox', false)],
+    [L`smooth`, 'addBoolean', [settings.rendering.smooth], updateSettings(settings.rendering, 'smooth', false)],
     [L`renderBiomesTexture`, 'addBoolean', [settings.rendering.renderBiomesTexture], updateSettings(settings.rendering, 'renderBiomesTexture', false)],
     [L`renderPoisson`, 'addBoolean', [settings.rendering.renderPoisson], updateSettings(settings.rendering, 'renderPoisson', false)],
     [L`renderVoronoiCells`, 'addBoolean', [settings.rendering.renderVoronoiCells], updateSettings(settings.rendering, 'renderVoronoiCells', false)],
@@ -112,7 +116,7 @@ const gui = GUI({
   ],
   [L`textures`]: [
     [L`json`, 'addJSON', [''], textures.fromJSON, 1000],
-    [L`sprites`, 'addTextArea', [''], sprites.updateFromFilenames]
+    [L`sprites`, 'addHTML', `<ol><li>${L`sprites.undefined`}</li></ol>`]
   ],
   [L`export`]: [
     [L`save as PNG`, 'addButton', [], () => map.renderer.toBlob(blob => FileSaver.saveAs(blob, filename('wipmap')))],
@@ -142,10 +146,7 @@ hotkeys('shift+down', () => gui.panels[L`generation`].setValue('y', settings.y +
 
 uploader({
   dropzone: document.documentElement,
-  callback: (image, filename) => {
-    sprites.add(image, filename)
-    gui.panels.textures.setValue('sprites', sprites.filenames.join('\n'))
-  }
+  callback: sprites.add
 })
 
 loading(L`loading`, [
@@ -154,7 +155,11 @@ loading(L`loading`, [
   L`loading.map`, () => {
     gui.enable()
     gui.show()
-    sprites.watch(updateMap)
+    gui.panels[L`textures`].setValue(L`sprites`, sprites.toHTML(L`sprites.undefined`))
+    sprites.watch(() => {
+      gui.panels[L`textures`].setValue(L`sprites`, sprites.toHTML(L`sprites.undefined`))
+      updateMap(true)
+    })
     textures.watch(updateMap)
   },
   L`rendering.map`, updateMap

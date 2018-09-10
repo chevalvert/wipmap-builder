@@ -22,6 +22,15 @@ export default {
     events.emit(NS + 'update', sprites)
   },
 
+  toHTML (fallback) {
+    const filenames = Object.keys(sprites).length
+      ? Object.keys(sprites)
+      : [fallback]
+    return `<ol class='sprites-list'>
+      ${filenames.map(filename => `<li class='sprites-list--item'>${filename}</li>`).join('\n')}
+    </ol>`
+  },
+
   // NOTE: this is used for legacy support
   toSpritesheets: () => {
     const spritesheets = {}

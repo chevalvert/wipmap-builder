@@ -21,6 +21,8 @@ locales.fr['export'] = 'export'
 locales.fr['vorowidth'] = 'largeur de la grille'
 locales.fr['voroheight'] = 'hauteur de la grille'
 
+locales.fr['sprites.undefined'] = 'Glissez-déposez vos fichiers'
+
 export default (LANG = 'fr') => key => {
   if (!key) return
   if (Array.isArray(key)) key = key[0]
