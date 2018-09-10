@@ -1,39 +1,62 @@
 const locales = { fr: {}, en: {} }
 
 locales.fr['loading'] = 'chargement'
-locales.fr['loading.config'] = 'récupération de la configuration'
-locales.fr['loading.connection'] = 'en attente de connection'
-locales.fr['loading.fetching-agent'] = 'récupération de l\'explorateur'
-locales.fr['loading.fetching-plotter'] = 'récupération du plotter'
-locales.fr['loading.generating'] = 'génération de la nouvelle carte'
 locales.fr['loading.map'] = 'génération de la carte'
-locales.fr['loading.sprites'] = 'pré-chargement des images'
-locales.fr['loading.waiting-for-server'] = 'en attente de connection'
-locales.fr['loading.waiting-for-plotter'] = 'en attente du plotter'
 
 locales.fr['error'] = 'erreur'
-locales.fr['error.noslot'] = 'plus de place disponible'
 
-locales.fr['generation'] = 'génération'
-locales.fr['rendering'] = 'rendu'
-locales.fr['textures'] = 'textures'
-locales.fr['export'] = 'export'
-locales.fr['vorowidth'] = 'largeur de la grille'
-locales.fr['voroheight'] = 'hauteur de la grille'
-locales.fr['jitter'] = ''
+locales.fr['gui.panel.generation'] = `génération`
+locales.fr['gui.panel.generation.seed'] = `seed`
+locales.fr['gui.panel.generation.x'] = `x`
+locales.fr['gui.panel.generation.y'] = `y`
+locales.fr['gui.panel.generation.voronoiWidth'] = `largeur de la grille`
+locales.fr['gui.panel.generation.voronoiHeight'] = `hauteur de la grille`
+locales.fr['gui.panel.generation.jitter'] = `déformation de la grille`
+locales.fr['gui.panel.generation.distortion'] = `déformation des cellules`
+locales.fr['gui.panel.generation.gradient'] = `dégradé des frontières`
+locales.fr['gui.panel.generation.poissonDensity'] = `densité de points`
+locales.fr['gui.panel.generation.water'] = `niveau de l'eau`
 
-locales.fr['sprites.undefined'] = 'Glissez-déposez vos fichiers'
+locales.fr['gui.panel.rendering'] = `rendu`
+locales.fr['gui.panel.rendering.width'] = `largeur du canvas`
+locales.fr['gui.panel.rendering.height'] = `hauteur du canvas`
+locales.fr['gui.panel.rendering.smooth'] = `antialiasing`
+locales.fr['gui.panel.rendering.renderBiomesTexture'] = `afficher les textures`
+locales.fr['gui.panel.rendering.renderPoisson'] = `afficher les points`
+locales.fr['gui.panel.rendering.renderVoronoiCells'] = `afficher la grille`
+locales.fr['gui.panel.rendering.renderVoronoiSites'] = `affiche le centre des cellules`
+locales.fr['gui.panel.rendering.scale'] = `échelle des sprites`
+locales.fr['gui.panel.rendering.voronoiColor'] = `couleur de la grille`
+locales.fr['gui.panel.rendering.backgroundColor'] = `couleur de l'arrière-plan`
+locales.fr['gui.panel.rendering.backgroundAlpha'] = `transparence de l'arrière-plan`
+
+locales.fr['gui.panel.legend'] = `légende`
+locales.fr['gui.panel.legend.DESERT'] = `désert [DESERT]`
+locales.fr['gui.panel.legend.FOREST'] = `forêt [FOREST]`
+locales.fr['gui.panel.legend.MOUNTAINS'] = `montagnes [MOUNTAINS]`
+locales.fr['gui.panel.legend.PLAINS'] = `plaines [PLAINS]`
+locales.fr['gui.panel.legend.SWAMP'] = `marais [SWAMP]`
+locales.fr['gui.panel.legend.WATER'] = `eau [WATER]`
+
+locales.fr['gui.panel.textures'] = `textures`
+locales.fr['gui.panel.textures.texturesDescriber'] = ` `
+locales.fr['gui.panel.textures.spritesList'] = `liste des sprites`
+locales.fr['gui.panel.textures.spritesList.empty'] = `Glissez-déposez une ou plusieurs images pour commencer`
+
+locales.fr['gui.panel.export'] = `export`
+locales.fr['gui.panel.export.png'] = `exporter l'image`
+locales.fr['gui.panel.export.json'] = `exporter la configuration`
+locales.fr['gui.panel.export.loadJSON'] = `importer une configuration`
+locales.fr['gui.panel.export.loadJSON.browse'] = `parcourir les fichiers...`
+
+locales.fr['gui.panel.view'] = `échelle`
+locales.fr['gui.panel.view.canvasScale'] = `échelle du canvas`
 
 export default (LANG = 'fr') => key => {
   if (!key) return
   if (Array.isArray(key)) key = key[0]
 
-  if (!locales.hasOwnProperty(LANG)) return key
-
-  const locale = locales[LANG][key.toLowerCase()]
-  return locale !== undefined
-    ? Array.isArray(locale)
-      ? locale[Math.floor(Math.random() * locale.length)]
-      : locale
+  return locales.hasOwnProperty(LANG)
+    ? locales[LANG][key] || key
     : key
 }

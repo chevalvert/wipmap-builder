@@ -3,9 +3,14 @@ import noop from 'utils/noop'
 import makeIndetable from 'utils/make-textarea-indentable'
 import makeAutoHeight from 'utils/make-textarea-autoheight'
 
-/* global Blob, FileReader */
+/* global Blob, FileReader, localStorage */
 
-export default (tree, DOMContainer = document.body) => {
+const NS = 'WIPMAP.'
+
+export default (tree, {
+  DOMContainer = document.body,
+  localize = key => key
+} = {}) => {
   const panels = {}
   let enabled = false
   let visible = true
@@ -16,7 +21,7 @@ export default (tree, DOMContainer = document.body) => {
   Object.entries(tree).forEach(([title, panelControls]) => {
     const x = Object.keys(panels).length * 205
     const y = 0
-    const panel = QuickSettings.create(x, y, title, DOMContainer).hide()
+    const panel = QuickSettings.create(x, y, localize(title), DOMContainer).hide()
     panel.debouncedCallbacks = {}
 
     // Adding the controls to the panel
@@ -29,7 +34,7 @@ export default (tree, DOMContainer = document.body) => {
         : callback
 
       if (method === 'addJSON') addJSONInput(panel, name, debouncedCallback)
-      else panel[method](name, ...args, debouncedCallback)
+      else panel[method](localize(name), ...args, debouncedCallback)
     })
 
     // NOTE: implementing custom collapsing behavior with persistent storage capabilities
@@ -48,8 +53,9 @@ export default (tree, DOMContainer = document.body) => {
 
   const api = {
     get panels () { return panels },
-    get enabled () { return enabled },
+    setValue: (panelName, controlName, value) => panels[panelName].setValue(localize(controlName), value),
 
+    get enabled () { return enabled },
     enable () { enabled = true },
     disable () { enabled = false },
 
@@ -59,22 +65,21 @@ export default (tree, DOMContainer = document.body) => {
     hide,
     toggle: () => visible ? hide() : show(),
 
-    toJSON: () => Object.entries(panels).reduce((json, [name, panel]) => {
+    toObject: () => Object.entries(panels).reduce((json, [name, panel]) => {
       json[name] = panel.getValuesAsJSON()
       return json
     }, {}),
 
-    toBlob: () => new Blob([JSON.stringify(api.toJSON(), null, 2)], { type: 'application/json' }),
+    toBlob: () => new Blob([JSON.stringify(api.toObject(), null, 2)], { type: 'application/json' }),
 
     fromJSON: json => {
       try {
         json = JSON.parse(typeof json === 'string' ? json : JSON.stringify(json))
-        Object.entries(panels).forEach(([name, panel]) => {
-          console.log(name)
-          if (json.hasOwnProperty(name)) {
-            console.log(name)
-            panel.setValuesFromJSON(json[name])
-          }
+
+        localStorage.clear()
+        Object.keys(json).forEach(key => {
+          const value = typeof json === 'string' ? json[key] : JSON.stringify(json[key])
+          localStorage.setItem(NS + key, value)
         })
         save()
       } catch (e) {
@@ -110,7 +115,7 @@ export default (tree, DOMContainer = document.body) => {
   }
 
   function addJSONInput (panel, name, callback = noop) {
-    panel.addTextArea(name, '{\n}', string => {
+    panel.addTextArea(localize(name), '{\n}', string => {
       try {
         const json = JSON.parse(string)
         element.classList.remove('is-invalid')
@@ -120,7 +125,7 @@ export default (tree, DOMContainer = document.body) => {
       }
     })
 
-    const element = panel._controls[name].control
+    const element = panel._controls[localize(name)].control
     if (!element) return
     element.classList.add('qs_json')
 
@@ -144,7 +149,7 @@ export default (tree, DOMContainer = document.body) => {
       ['qsstore', qsStore]
     ].forEach(([name, panel]) => {
       try {
-        panel.saveInLocalStorage('WIPMAP-' + name)
+        panel.saveInLocalStorage(NS + name)
       } catch (e) {
         console.warn(e)
       }
