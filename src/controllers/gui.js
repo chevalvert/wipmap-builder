@@ -17,11 +17,19 @@ export default (tree, DOMContainer = document.body) => {
     const x = Object.keys(panels).length * 205
     const y = 0
     const panel = QuickSettings.create(x, y, title, DOMContainer).hide()
+    panel.debouncedCallbacks = {}
 
     // Adding the controls to the panel
-    panelControls.forEach(([name, method, args, callback]) => {
-      if (method === 'addJSON') addJSONInput(panel, name, callback)
-      else panel[method](name, ...args, callback)
+    panelControls.forEach(([name, method, args, callback, debounceDelay = 300]) => {
+      const debouncedCallback = debounceDelay > 0
+        ? value => {
+          window.clearTimeout(panel.debouncedCallbacks[name])
+          panel.debouncedCallbacks[name] = window.setTimeout(() => callback(value), debounceDelay)
+        }
+        : callback
+
+      if (method === 'addJSON') addJSONInput(panel, name, debouncedCallback)
+      else panel[method](name, ...args, debouncedCallback)
     })
 
     // NOTE: implementing custom collapsing behavior with persistent storage capabilities
@@ -36,16 +44,7 @@ export default (tree, DOMContainer = document.body) => {
     panels[title] = panel
   })
 
-  ;[
-    ...Object.entries(panels),
-    ['qsstore', qsStore]
-  ].forEach(([name, panel]) => {
-    try {
-      panel.saveInLocalStorage('WIPMAP-' + name)
-    } catch (e) {
-      console.warn(e)
-    }
-  })
+  save()
 
   const api = {
     get panels () { return panels },
@@ -53,6 +52,8 @@ export default (tree, DOMContainer = document.body) => {
 
     enable () { enabled = true },
     disable () { enabled = false },
+
+    save,
 
     show,
     hide,
@@ -63,14 +64,19 @@ export default (tree, DOMContainer = document.body) => {
       return json
     }, {}),
 
-    toBlob: () => new Blob([JSON.stringify(api.toJSON(), null, window.isProduction ? 0 : 2)], { type: 'application/json' }),
+    toBlob: () => new Blob([JSON.stringify(api.toJSON(), null, 2)], { type: 'application/json' }),
 
     fromJSON: json => {
       try {
         json = JSON.parse(typeof json === 'string' ? json : JSON.stringify(json))
         Object.entries(panels).forEach(([name, panel]) => {
-          if (json.hasOwnProperty(name)) panel.setValuesFromJSON(json[name])
+          console.log(name)
+          if (json.hasOwnProperty(name)) {
+            console.log(name)
+            panel.setValuesFromJSON(json[name])
+          }
         })
+        save()
       } catch (e) {
         console.warn(e)
       }
@@ -130,5 +136,18 @@ export default (tree, DOMContainer = document.body) => {
 
     makeIndetable(element, 2)
     makeAutoHeight(element, () => qsStore.setValue(name + '-size', element.offsetWidth + ';' + element.offsetHeight))
+  }
+
+  function save () {
+    ;[
+      ...Object.entries(panels),
+      ['qsstore', qsStore]
+    ].forEach(([name, panel]) => {
+      try {
+        panel.saveInLocalStorage('WIPMAP-' + name)
+      } catch (e) {
+        console.warn(e)
+      }
+    })
   }
 }

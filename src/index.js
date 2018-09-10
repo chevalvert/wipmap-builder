@@ -111,7 +111,7 @@ const gui = GUI({
     })
   ],
   [L`textures`]: [
-    [L`json`, 'addJSON', [''], textures.fromJSON],
+    [L`json`, 'addJSON', [''], textures.fromJSON, 1000],
     [L`sprites`, 'addTextArea', [''], sprites.updateFromFilenames]
   ],
   [L`export`]: [
@@ -149,13 +149,15 @@ uploader({
 })
 
 loading(L`loading`, [
+  // NOTE: enabling after gui.debounceDelay
+  () => new Promise(resolve => window.setTimeout(resolve, 300)),
   L`loading.map`, () => {
     gui.enable()
     gui.show()
-    updateMap()
     sprites.watch(updateMap)
     textures.watch(updateMap)
-  }
+  },
+  L`rendering.map`, updateMap
 ]).catch(error)
 
 function updateSettings (o, key, regenerate = true) {
