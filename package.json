@@ -77,7 +77,8 @@
     "reconnectingwebsocket": "^1.0.0",
     "tiny-emitter": "^2.0.2",
     "whatwg-fetch": "^2.0.3",
-    "wipmap-generate": "github:chevalvert/wipmap-generate"
+    "wipmap-generate": "github:chevalvert/wipmap-generate",
+    "wipmap-renderer": "chevalvert/wipmap-renderer"
   },
   "private": true,
   "optionalDependencies": {}

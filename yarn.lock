@@ -7817,6 +7817,13 @@ window-size@^0.2.0:
     tumult "^3.0.3"
     voronoi-diagram "^1.0.1"
 
+wipmap-renderer@chevalvert/wipmap-renderer:
+  version "0.1.0"
+  resolved "git+ssh://git@github.com/chevalvert/wipmap-renderer.git#a609fae713c5b7bddf3901b324fe596dd14b179f"
+  dependencies:
+    fast-random "^2.0.4"
+    missing-math "^2.0.1"
+
 wordwrap@0.0.2:
   version "0.0.2"
   resolved "https://registry.yarnpkg.com/wordwrap/-/wordwrap-0.0.2.tgz#b79669bb42ecb409f83d583cad52ca17eaa1643f"
