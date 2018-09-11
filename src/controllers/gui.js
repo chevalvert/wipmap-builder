@@ -74,6 +74,7 @@ export default (tree, {
 
     show,
     hide,
+    get visible () { return visible },
     toggle: () => visible ? hide() : show(),
 
     fromJSON: (json, correspondenceTable) => {

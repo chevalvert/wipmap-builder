@@ -70,7 +70,7 @@ const gui = GUI({
     ['gui.panel.textures.spritesList', 'addHTML', `<ol><li>${L`gui.panel.textures.spritesList.empty`}</li></ol>`]
   ],
   'gui.panel.export': [
-    ['gui.panel.export.png', 'addButton', [], () => map.renderer.toBlob(blob => FileSaver.saveAs(blob, filename('wipmap')))],
+    ['gui.panel.export.png', 'addButton', [], exportImage],
     ['gui.panel.export.json', 'addButton', [], () => FileSaver.saveAs(settings.toBlob(), filename('wipmap'))],
     ['gui.panel.export.loadJSON', 'addFileChooser', [L`gui.panel.export.loadJSON.browse`, 'application/json'], file => {
       gui.disable()
@@ -88,8 +88,30 @@ const gui = GUI({
   localize: L
 })
 
-hotkeys('h', gui.toggle)
-hotkeys('w', () => gui.setValue('gui.panel.rendering', 'gui.panel.rendering.renderVoronoiCells', !SETTINGS.rendering.renderVoronoiCells))
+hotkeys('ctrl+h,h', () => {
+  gui.toggle()
+  const preview = Object.assign({}, SETTINGS, {
+    rendering: Object.assign({}, SETTINGS.rendering, {
+      renderBiomesTexture: true,
+      renderPoisson: false,
+      renderVoronoiCells: false,
+      renderVoronoiSites: false
+    })
+  })
+  updateMap(false, gui.visible ? SETTINGS : preview)
+})
+hotkeys('w', () => {
+  gui.disable()
+  const debug = SETTINGS.rendering.renderVoronoiSites
+  gui.setValue('gui.panel.rendering', 'gui.panel.rendering.renderVoronoiSites', !debug)
+  gui.setValue('gui.panel.rendering', 'gui.panel.rendering.renderVoronoiCells', !debug)
+  gui.enable()
+  updateMap(false)
+})
+hotkeys('ctrl+s,cmd+s', e => {
+  e.preventDefault()
+  exportImage()
+})
 hotkeys('left', () => gui.setValue('gui.panel.generation', 'x', Math.max(0, SETTINGS.x - 1)))
 hotkeys('up', () => gui.setValue('gui.panel.generation', 'y', Math.max(0, SETTINGS.y - 1)))
 hotkeys('right', () => gui.setValue('gui.panel.generation', 'x', SETTINGS.x + 1))
@@ -132,19 +154,23 @@ loading(L`loading`, [
   }
 ]).catch(error)
 
-function updateMap (regenerate = true) {
-  if (!regenerate) return map && map.renderer.update([], SETTINGS.rendering)
+function exportImage () {
+  map.renderer.toBlob(blob => FileSaver.saveAs(blob, filename('wipmap')))
+}
+
+function updateMap (regenerate = true, opts = SETTINGS) {
+  if (!regenerate) return map && map.renderer.update([], opts.rendering)
 
   Promise.resolve()
     .then(() => document.querySelector('main').classList.add('is-rendering'))
-    .then(() => generateMap(SETTINGS.x, SETTINGS.y, SETTINGS.generation))
+    .then(() => generateMap(opts.x, opts.y, opts.generation))
     .then(response => {
       map = response
       document.querySelector('main').classList.remove('is-rendering')
       map.renderer = new Renderer(canvas.element, {
         map,
         seed: map.seed,
-        textures: SETTINGS.textures,
+        textures: opts.textures,
         spritesheets: sprites.toSpritesheets()
       })
       updateMap(false)
