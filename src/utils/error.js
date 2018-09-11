@@ -5,5 +5,7 @@ export default function (err) {
 
   const error = new LogScreen(err.name, err.message, 'error')
   console.error(err)
+
   error.mount(document.body)
+  error.refs.base.addEventListener('click', () => error.destroy())
 }
