@@ -29,6 +29,7 @@ main {
   &::after {
     @include easing(500ms, opacity);
     @include loader(2rem, 0.3rem, $black, transparent, 0.5s);
+    position: fixed;
     left: auto;
     top: 2rem;
     right: 1rem;
