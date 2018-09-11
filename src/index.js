@@ -112,10 +112,14 @@ loading(L`loading`, [
     gui.show()
     gui.setValue('gui.panel.textures', 'gui.panel.textures.spritesList', sprites.toHTML(L`gui.panel.textures.spritesList.empty`))
 
-    textures.watch(() => settings.update('textures', false)(textures.toObject()))
-
     settings.watch((regenerate = true) => {
       if (gui && gui.enabled) updateMap(regenerate)
+    })
+
+    textures.watch(() => {
+      const tex = textures.toObject()
+      if (map && map.renderer) map.renderer.textures = tex
+      settings.update('textures', false)(tex)
     })
 
     canvas.watch(() => updateMap(false))
