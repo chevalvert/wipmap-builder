@@ -110,7 +110,7 @@ const gui = GUI({
     })
   ],
   'gui.panel.textures': [
-    ['gui.panel.textures.texturesDescriber', 'addJSON', [''], textures.fromJSON, 1000],
+    ['gui.panel.textures.texturesDescriber', 'addJSON', L`gui.panel.textures.texturesDescriber.placeholder`, textures.fromJSON, 1000],
     ['gui.panel.textures.spritesList', 'addHTML', `<ol><li>${L`gui.panel.textures.spritesList.empty`}</li></ol>`]
   ],
   'gui.panel.export': [

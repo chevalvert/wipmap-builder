@@ -40,6 +40,10 @@ locales.fr['gui.panel.legend.WATER'] = `eau [WATER]`
 
 locales.fr['gui.panel.textures'] = `textures`
 locales.fr['gui.panel.textures.texturesDescriber'] = ` `
+locales.fr['gui.panel.textures.texturesDescriber.placeholder'] = `{
+  "DESERT": [["file.png", 1, 1]],
+  "PLAINS": [["file-1.png", 0.5, 1], ["file-2.png", 0.5, 1]]
+}`
 locales.fr['gui.panel.textures.spritesList'] = `liste des sprites`
 locales.fr['gui.panel.textures.spritesList.empty'] = `Glissez-déposez une ou plusieurs images pour commencer`
 

@@ -33,7 +33,7 @@ export default (tree, {
         }
         : callback
 
-      if (method === 'addJSON') addJSONInput(panel, name, debouncedCallback)
+      if (method === 'addJSON') addJSONInput(panel, name, args, debouncedCallback)
       else panel[method](localize(name), ...args, debouncedCallback)
     })
 
@@ -114,8 +114,8 @@ export default (tree, {
     visible = false
   }
 
-  function addJSONInput (panel, name, callback = noop) {
-    panel.addTextArea(localize(name), '{\n}', string => {
+  function addJSONInput (panel, name, placeholder, callback = noop) {
+    panel.addTextArea(localize(name), placeholder, string => {
       try {
         const json = JSON.parse(string)
         element.classList.remove('is-invalid')
