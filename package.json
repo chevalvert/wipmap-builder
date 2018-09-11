@@ -1,6 +1,6 @@
 {
   "name": "wipmap-builder",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "wipmap map builder",
   "bin": {
     "wipmap": "node server/index.js"
