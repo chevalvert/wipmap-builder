@@ -94,15 +94,15 @@ const gui = GUI({
   'gui.panel.rendering': [
     ['gui.panel.rendering.width', 'addNumber', [0, Number.POSITIVE_INFINITY, canvas.width, 1], v => canvas.resize({ width: v })],
     ['gui.panel.rendering.height', 'addNumber', [0, Number.POSITIVE_INFINITY, canvas.height, 1], v => canvas.resize({ height: v })],
-    ['gui.panel.rendering.smooth', 'addBoolean', [settings.rendering.smooth], updateSettings(settings.rendering, 'smooth', false)],
-    ['gui.panel.rendering.renderBiomesTexture', 'addBoolean', [settings.rendering.renderBiomesTexture], updateSettings(settings.rendering, 'renderBiomesTexture', false)],
-    ['gui.panel.rendering.renderPoisson', 'addBoolean', [settings.rendering.renderPoisson], updateSettings(settings.rendering, 'renderPoisson', false)],
-    ['gui.panel.rendering.renderVoronoiCells', 'addBoolean', [settings.rendering.renderVoronoiCells], updateSettings(settings.rendering, 'renderVoronoiCells', false)],
-    ['gui.panel.rendering.renderVoronoiSites', 'addBoolean', [settings.rendering.renderVoronoiSites], updateSettings(settings.rendering, 'renderVoronoiSites', false)],
+    ['gui.panel.rendering.smooth', 'addBoolean', [settings.rendering.smooth], updateSettings(settings.rendering, 'smooth', false), 0],
+    ['gui.panel.rendering.renderBiomesTexture', 'addBoolean', [settings.rendering.renderBiomesTexture], updateSettings(settings.rendering, 'renderBiomesTexture', false), -1],
+    ['gui.panel.rendering.renderPoisson', 'addBoolean', [settings.rendering.renderPoisson], updateSettings(settings.rendering, 'renderPoisson', false), -1],
+    ['gui.panel.rendering.renderVoronoiCells', 'addBoolean', [settings.rendering.renderVoronoiCells], updateSettings(settings.rendering, 'renderVoronoiCells', false), -1],
+    ['gui.panel.rendering.renderVoronoiSites', 'addBoolean', [settings.rendering.renderVoronoiSites], updateSettings(settings.rendering, 'renderVoronoiSites', false), -1],
     ['gui.panel.rendering.scale', 'addNumber', [0, Number.POSITIVE_INFINITY, settings.rendering.scale, 0.01], updateSettings(settings.rendering, 'scale', false)],
-    ['gui.panel.rendering.voronoiColor', 'addColor', [settings.rendering.colors.voronoi], updateSettings(settings.rendering.colors, 'voronoi', false)],
-    ['gui.panel.rendering.backgroundColor', 'addColor', [settings.rendering.colors.background], updateSettings(settings.rendering.colors, 'background', false)],
-    ['gui.panel.rendering.backgroundAlpha', 'addRange', [0, 255, 255, 1], a => updateSettings(settings.rendering.colors, 'background', false)(Color(settings.rendering.colors.background).alpha(a / 255).string())]
+    ['gui.panel.rendering.voronoiColor', 'addColor', [settings.rendering.colors.voronoi], updateSettings(settings.rendering.colors, 'voronoi', false), -1],
+    ['gui.panel.rendering.backgroundColor', 'addColor', [settings.rendering.colors.background], updateSettings(settings.rendering.colors, 'background', false), -1],
+    ['gui.panel.rendering.backgroundAlpha', 'addRange', [0, 255, 255, 1], a => updateSettings(settings.rendering.colors, 'background', false)(Color(settings.rendering.colors.background).alpha(a / 255).string()), -1]
   ],
   'gui.panel.legend': [
     ...[...unique(flatten(settings.generation.biomesMap)), 'WATER'].map(biome => {
