@@ -11,8 +11,18 @@
     color: $white;
   }
 
-  .qs_content { background-color: $gray; }
-  .qs_container { margin: 1px; }
+  .qs_content {
+    background-color: $gray;
+    max-height: calc(100vh - 2.4rem);
+    overflow-y: scroll;
+    border: 1px solid $gray;
+  }
+
+  .qs_container {
+    margin: 0;
+    &:not(:last-child) { margin-bottom: 1px; }
+  }
+
   .qs_button {
     width: 100%;
     text-align: left;
