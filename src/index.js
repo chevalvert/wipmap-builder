@@ -1,4 +1,4 @@
-import localize from 'loc'
+import localize from 'locales'
 
 import fps from 'fps-indicator'
 import FileSaver from 'file-saver'

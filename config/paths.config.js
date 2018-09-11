@@ -19,11 +19,12 @@ module.exports = {
   static: path.join(__dirname, '..', 'static'),
 
   // Node-Resolve aliases
-  components: path.join(__dirname, '..', 'src', 'components'),
   abstractions: path.join(__dirname, '..', 'src', 'abstractions'),
+  components: path.join(__dirname, '..', 'src', 'components'),
   controllers: path.join(__dirname, '..', 'src', 'controllers'),
-  utils: path.join(__dirname, '..', 'src', 'utils'),
+  locales: path.join(__dirname, '..', 'src', 'locales'),
   pages: path.join(__dirname, '..', 'src', 'pages'),
+  utils: path.join(__dirname, '..', 'src', 'utils'),
 
   // Generating page from content and layouts
   layouts: path.join(__dirname, '..', 'src', 'pages'),

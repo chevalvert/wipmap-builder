@@ -13,12 +13,12 @@ module.exports = {
   },
   resolve: {
     alias: {
-      components: paths.components,
       abstractions: paths.abstractions,
+      components: paths.components,
       controllers: paths.controllers,
+      locales: paths.locales,
       pages: paths.pages,
       utils: paths.utils,
-      loc: path.join(paths.src, 'loc.js'),
       worker: path.join(paths.src, 'worker.js')
     }
   },
