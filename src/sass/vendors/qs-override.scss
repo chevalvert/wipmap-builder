@@ -45,4 +45,8 @@
     resize: both;
     padding: 1ch;
   }
+
+  ol, ul, li {
+    user-select: text;
+  }
 }
