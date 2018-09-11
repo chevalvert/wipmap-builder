@@ -7,6 +7,8 @@ import Color from 'color'
 import Renderer from 'wipmap-renderer'
 import generate from 'wipmap-generate'
 
+import settings, { settings as SETTINGS } from 'controllers/settings'
+
 import canvas from 'controllers/canvas'
 import GUI from 'controllers/gui'
 import uploader from 'controllers/images-uploader'
@@ -22,91 +24,45 @@ import flatten from 'utils/array-flatten'
 import unique from 'utils/array-unique'
 
 if (!window.isProduction) fps()
-const L = localize(window.lang)
+const L = localize(window.isProduction && window.lang)
 
 let map
 
-const settings = {
-  x: 0,
-  y: 0,
-  generation: {
-    seed: 'wipmap',
-    width: 3,
-    height: 3,
-    decimals: 3,
-
-    jitter: 0.4,
-    distortion: 0.9,
-    gradient: 0.8,
-
-    poissonDensity: 0.4,
-
-    probablities: {
-      water: 0,
-      forest: 0
-    },
-
-    biomesMap: [
-      ['SWAMP', 'FOREST', 'SWAMP'],
-      ['MOUNTAINS', 'PLAINS', 'FOREST'],
-      ['MOUNTAINS', 'DESERT', 'DESERT']
-    ]
-  },
-  rendering: {
-    smooth: true,
-    forceUpdate: true,
-    debugPerf: !window.isProduction,
-    drawBoundingBox: false,
-
-    renderBiomesTexture: true,
-    renderLandmarks: true,
-
-    renderPoisson: false,
-    renderVoronoiCells: false,
-    renderVoronoiSites: false,
-    scale: 1,
-    colors: {
-      background: '#ffffff',
-      voronoi: '#AAAAAA',
-      'SWAMP': '#cc65bb',
-      'FOREST': '#1dca63',
-      'MOUNTAINS': '#a1b575',
-      'PLAINS': '#abf1ac',
-      'DESERT': '#fffc92',
-      'WATER': '#85e3ff'
-    }
-  }
-}
-
 const gui = GUI({
   'gui.panel.generation': [
-    ['gui.panel.generation.seed', 'addText', [settings.generation.seed], updateSettings(settings.generation, 'seed')],
-    ['gui.panel.generation.x', 'addNumber', [0, 100, settings.x, 1], updateSettings(settings, 'x')],
-    ['gui.panel.generation.y', 'addNumber', [0, 100, settings.y, 1], updateSettings(settings, 'y')],
-    ['gui.panel.generation.voronoiWidth', 'addRange', [2, 20, settings.generation.width, 1], updateSettings(settings.generation, 'width')],
-    ['gui.panel.generation.voronoiHeight', 'addRange', [2, 20, settings.generation.height, 1], updateSettings(settings.generation, 'height')],
-    ['gui.panel.generation.jitter', 'addRange', [0, 1, settings.generation.jitter, 0.01], updateSettings(settings.generation, 'jitter')],
-    ['gui.panel.generation.distortion', 'addRange', [0, 1, settings.generation.distortion, 0.01], updateSettings(settings.generation, 'distortion')],
-    ['gui.panel.generation.gradient', 'addRange', [0, 1, settings.generation.gradient, 0.01], updateSettings(settings.generation, 'gradient')],
-    ['gui.panel.generation.poissonDensity', 'addRange', [0, 10, settings.generation.poissonDensity, 0.01], updateSettings(settings.generation, 'poissonDensity')],
-    ['gui.panel.generation.water', 'addRange', [0, 1, settings.generation.probablities.water, 0.01], updateSettings(settings.generation.probablities, 'water')]
+    ['gui.panel.generation.seed', 'addText', [SETTINGS.generation.seed], settings.update('generation.seed')],
+    ['gui.panel.generation.x', 'addNumber', [0, 100, SETTINGS.x, 1], settings.update('x')],
+    ['gui.panel.generation.y', 'addNumber', [0, 100, SETTINGS.y, 1], settings.update('y')],
+    ['gui.panel.generation.voronoiWidth', 'addRange', [2, 20, SETTINGS.generation.width, 1], settings.update('generation.width')],
+    ['gui.panel.generation.voronoiHeight', 'addRange', [2, 20, SETTINGS.generation.height, 1], settings.update('generation.height')],
+    ['gui.panel.generation.jitter', 'addRange', [0, 1, SETTINGS.generation.jitter, 0.01], settings.update('generation.jitter')],
+    ['gui.panel.generation.distortion', 'addRange', [0, 1, SETTINGS.generation.distortion, 0.01], settings.update('generation.distortion')],
+    ['gui.panel.generation.gradient', 'addRange', [0, 1, SETTINGS.generation.gradient, 0.01], settings.update('generation.gradient')],
+    ['gui.panel.generation.poissonDensity', 'addRange', [0, 10, SETTINGS.generation.poissonDensity, 0.01], settings.update('generation.poissonDensity')],
+    ['gui.panel.generation.water', 'addRange', [0, 1, SETTINGS.generation.probablities.water, 0.01], settings.update('generation.probablities.water')]
   ],
   'gui.panel.rendering': [
-    ['gui.panel.rendering.width', 'addNumber', [0, Number.POSITIVE_INFINITY, canvas.width, 1], v => canvas.resize({ width: v })],
-    ['gui.panel.rendering.height', 'addNumber', [0, Number.POSITIVE_INFINITY, canvas.height, 1], v => canvas.resize({ height: v })],
-    ['gui.panel.rendering.smooth', 'addBoolean', [settings.rendering.smooth], updateSettings(settings.rendering, 'smooth', false), 0],
-    ['gui.panel.rendering.renderBiomesTexture', 'addBoolean', [settings.rendering.renderBiomesTexture], updateSettings(settings.rendering, 'renderBiomesTexture', false), -1],
-    ['gui.panel.rendering.renderPoisson', 'addBoolean', [settings.rendering.renderPoisson], updateSettings(settings.rendering, 'renderPoisson', false), -1],
-    ['gui.panel.rendering.renderVoronoiCells', 'addBoolean', [settings.rendering.renderVoronoiCells], updateSettings(settings.rendering, 'renderVoronoiCells', false), -1],
-    ['gui.panel.rendering.renderVoronoiSites', 'addBoolean', [settings.rendering.renderVoronoiSites], updateSettings(settings.rendering, 'renderVoronoiSites', false), -1],
-    ['gui.panel.rendering.scale', 'addNumber', [0, Number.POSITIVE_INFINITY, settings.rendering.scale, 0.01], updateSettings(settings.rendering, 'scale', false)],
-    ['gui.panel.rendering.voronoiColor', 'addColor', [settings.rendering.colors.voronoi], updateSettings(settings.rendering.colors, 'voronoi', false), -1],
-    ['gui.panel.rendering.backgroundColor', 'addColor', [settings.rendering.colors.background], updateSettings(settings.rendering.colors, 'background', false), -1],
-    ['gui.panel.rendering.backgroundAlpha', 'addRange', [0, 255, 255, 1], a => updateSettings(settings.rendering.colors, 'background', false)(Color(settings.rendering.colors.background).alpha(a / 255).string()), -1]
+    ['gui.panel.rendering.width', 'addNumber', [0, Number.POSITIVE_INFINITY, canvas.width, 1], v => {
+      settings.update('rendering.width', false)(v)
+      canvas.resize({ width: v })
+    }],
+    ['gui.panel.rendering.height', 'addNumber', [0, Number.POSITIVE_INFINITY, canvas.height, 1], v => {
+      settings.update('rendering.height', false)(v)
+      canvas.resize({ height: v })
+    }],
+    ['gui.panel.rendering.smooth', 'addBoolean', [SETTINGS.rendering.smooth], settings.update('rendering.smooth', false), 0],
+    ['gui.panel.rendering.renderBiomesTexture', 'addBoolean', [SETTINGS.rendering.renderBiomesTexture], settings.update('rendering.renderBiomesTexture', false), -1],
+    ['gui.panel.rendering.renderPoisson', 'addBoolean', [SETTINGS.rendering.renderPoisson], settings.update('rendering.renderPoisson', false), -1],
+    ['gui.panel.rendering.renderVoronoiCells', 'addBoolean', [SETTINGS.rendering.renderVoronoiCells], settings.update('rendering.renderVoronoiCells', false), -1],
+    ['gui.panel.rendering.renderVoronoiSites', 'addBoolean', [SETTINGS.rendering.renderVoronoiSites], settings.update('rendering.renderVoronoiSites', false), -1],
+    ['gui.panel.rendering.scale', 'addNumber', [0, Number.POSITIVE_INFINITY, SETTINGS.rendering.scale, 0.01], settings.update('rendering.scale', false)],
+    ['gui.panel.rendering.voronoiColor', 'addColor', [SETTINGS.rendering.colors.voronoi], settings.update('rendering.colors.voronoi', false), -1],
+    ['gui.panel.rendering.backgroundColor', 'addColor', [SETTINGS.rendering.colors.background], settings.update('rendering.colors.background', false), -1],
+    ['gui.panel.rendering.backgroundAlpha', 'addRange', [0, 255, 255, 1], a => settings.update('rendering.colors.background', false)(Color(SETTINGS.rendering.colors.background).alpha(a / 255).string()), -1]
   ],
   'gui.panel.legend': [
-    ...[...unique(flatten(settings.generation.biomesMap)), 'WATER'].map(biome => {
-      return ['gui.panel.legend.' + biome, 'addColor', [settings.rendering.colors[biome]], updateSettings(settings.rendering.colors, biome, false)]
+    ...[...unique(flatten(SETTINGS.generation.biomesMap)), 'WATER'].map(biome => {
+      return ['gui.panel.legend.' + biome, 'addColor', [SETTINGS.rendering.colors[biome]], settings.update('rendering.colors.' + biome, false)]
     })
   ],
   'gui.panel.textures': [
@@ -115,10 +71,10 @@ const gui = GUI({
   ],
   'gui.panel.export': [
     ['gui.panel.export.png', 'addButton', [], () => map.renderer.toBlob(blob => FileSaver.saveAs(blob, filename('wipmap')))],
-    ['gui.panel.export.json', 'addButton', [], () => FileSaver.saveAs(gui.toBlob(), filename('wipmap'))],
+    ['gui.panel.export.json', 'addButton', [], () => FileSaver.saveAs(settings.toBlob(), filename('wipmap'))],
     ['gui.panel.export.loadJSON', 'addFileChooser', [L`gui.panel.export.loadJSON.browse`, 'application/json'], file => {
       gui.disable()
-      gui.fromFile(file, () => {
+      gui.fromFile(file, settings.GUI_CORRESPONDENCE_TABLE, () => {
         gui.enable()
         updateMap()
       })
@@ -129,21 +85,21 @@ const gui = GUI({
   ]
 }, {
   container: document.body,
-  localize: localize(window.lang)
+  localize: L
 })
 
 hotkeys('h', gui.toggle)
-hotkeys('w', () => gui.setValue('gui.panel.rendering', 'gui.panel.rendering.renderVoronoiCells', !settings.rendering.renderVoronoiCells))
+hotkeys('w', () => gui.setValue('gui.panel.rendering', 'gui.panel.rendering.renderVoronoiCells', !SETTINGS.rendering.renderVoronoiCells))
 
-hotkeys('left', () => gui.setValue('gui.panel.generation', 'x', Math.max(0, settings.x - 1)))
-hotkeys('up', () => gui.setValue('gui.panel.generation', 'y', Math.max(0, settings.y - 1)))
-hotkeys('right', () => gui.setValue('gui.panel.generation', 'x', settings.x + 1))
-hotkeys('down', () => gui.setValue('gui.panel.generation', 'y', settings.y + 1))
+hotkeys('left', () => gui.setValue('gui.panel.generation', 'x', Math.max(0, SETTINGS.x - 1)))
+hotkeys('up', () => gui.setValue('gui.panel.generation', 'y', Math.max(0, SETTINGS.y - 1)))
+hotkeys('right', () => gui.setValue('gui.panel.generation', 'x', SETTINGS.x + 1))
+hotkeys('down', () => gui.setValue('gui.panel.generation', 'y', SETTINGS.y + 1))
 
-hotkeys('shift+left', () => gui.setValue('gui.panel.generation', 'x', Math.max(0, settings.x - Math.floor(settings.generation.width / 2))))
-hotkeys('shift+up', () => gui.setValue('gui.panel.generation', 'y', Math.max(0, settings.y - Math.floor(settings.generation.height / 2))))
-hotkeys('shift+right', () => gui.setValue('gui.panel.generation', 'x', settings.x + Math.floor(settings.generation.width / 2)))
-hotkeys('shift+down', () => gui.setValue('gui.panel.generation', 'y', settings.y + Math.floor(settings.generation.height / 2)))
+hotkeys('shift+left', () => gui.setValue('gui.panel.generation', 'x', Math.max(0, SETTINGS.x - Math.floor(SETTINGS.generation.width / 2))))
+hotkeys('shift+up', () => gui.setValue('gui.panel.generation', 'y', Math.max(0, SETTINGS.y - Math.floor(SETTINGS.generation.height / 2))))
+hotkeys('shift+right', () => gui.setValue('gui.panel.generation', 'x', SETTINGS.x + Math.floor(SETTINGS.generation.width / 2)))
+hotkeys('shift+down', () => gui.setValue('gui.panel.generation', 'y', SETTINGS.y + Math.floor(SETTINGS.generation.height / 2)))
 
 uploader({
   dropzone: document.documentElement,
@@ -158,7 +114,12 @@ loading(L`loading`, [
     gui.show()
     gui.setValue('gui.panel.textures', 'gui.panel.textures.spritesList', sprites.toHTML(L`gui.panel.textures.spritesList.empty`))
 
-    textures.watch(updateMap)
+    textures.watch(() => settings.update('textures', false)(textures.toObject()))
+
+    settings.watch((regenerate = true) => {
+      if (gui && gui.enabled) updateMap(regenerate)
+    })
+
     canvas.watch(() => updateMap(false))
     sprites.watch(() => {
       gui.setValue('gui.panel.textures', 'gui.panel.textures.spritesList', sprites.toHTML(L`gui.panel.textures.spritesList.empty`))
@@ -169,21 +130,14 @@ loading(L`loading`, [
   }
 ]).catch(error)
 
-function updateSettings (o, key, regenerate = true) {
-  return value => {
-    o[key] = value
-    if (gui && gui.enabled) updateMap(regenerate)
-  }
-}
-
 function updateMap (regenerate = true) {
-  if (!regenerate) return map && map.renderer.update([], settings.rendering)
+  if (!regenerate) return map && map.renderer.update([], SETTINGS.rendering)
 
-  map = generate(settings.x, settings.y, settings.generation)
+  map = generate(SETTINGS.x, SETTINGS.y, SETTINGS.generation)
   map.renderer = new Renderer(canvas.element, {
     map,
     seed: map.seed,
-    textures: textures.toObject(),
+    textures: SETTINGS.textures,
     spritesheets: sprites.toSpritesheets()
   })
 

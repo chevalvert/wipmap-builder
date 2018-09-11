@@ -2,14 +2,16 @@ import QuickSettings from 'quicksettings'
 import noop from 'utils/noop'
 import makeIndetable from 'utils/make-textarea-indentable'
 import makeAutoHeight from 'utils/make-textarea-autoheight'
+import getByKeyPath from 'keypather/get'
 
-/* global Blob, FileReader, localStorage */
+/* global FileReader */
 
 const NS = 'WIPMAP.'
 
 export default (tree, {
   DOMContainer = document.body,
-  localize = key => key
+  localize = key => key,
+  replacer = inputID => inputID
 } = {}) => {
   const panels = {}
   let enabled = false
@@ -17,6 +19,15 @@ export default (tree, {
 
   QuickSettings.useExtStyleSheet()
   const qsStore = QuickSettings.create(0, 0).hide()
+
+  // NOTE: QS uses direct text label as internal identifier,
+  // so localization won't properly work in some use case.
+  const internalIDs = {}
+  const _localize = localize
+  localize = value => {
+    internalIDs[value] = _localize(value)
+    return internalIDs[value]
+  }
 
   Object.entries(tree).forEach(([title, panelControls]) => {
     const x = Object.keys(panels).length * 205
@@ -53,7 +64,7 @@ export default (tree, {
 
   const api = {
     get panels () { return panels },
-    setValue: (panelName, controlName, value) => panels[panelName].setValue(localize(controlName), value),
+    setValue,
 
     get enabled () { return enabled },
     enable () { enabled = true },
@@ -65,35 +76,30 @@ export default (tree, {
     hide,
     toggle: () => visible ? hide() : show(),
 
-    toObject: () => Object.entries(panels).reduce((json, [name, panel]) => {
-      json[name] = panel.getValuesAsJSON()
-      return json
-    }, {}),
-
-    toBlob: () => new Blob([JSON.stringify(api.toObject(), null, 2)], { type: 'application/json' }),
-
-    fromJSON: json => {
+    fromJSON: (json, correspondenceTable) => {
       try {
         json = JSON.parse(typeof json === 'string' ? json : JSON.stringify(json))
 
-        localStorage.clear()
-        Object.keys(json).forEach(key => {
-          const value = typeof json === 'string' ? json[key] : JSON.stringify(json[key])
-          localStorage.setItem(NS + key, value)
+        Object.entries(correspondenceTable).forEach(([guiPath, settingsPath]) => {
+          const [panelID, inputID] = guiPath.split('/')
+          const inputName = internalIDs[inputID]
+          if (!panelID || !inputName) return
+
+          const value = getByKeyPath(json, settingsPath)
+          setValue(panelID, inputName, typeof value === 'object' ? JSON.stringify(value, null, 2) : value)
         })
-        save()
       } catch (e) {
         console.warn(e)
       }
     },
 
-    fromFile: (file, callback = noop) => {
+    fromFile: (file, correspondenceTable, callback = noop) => {
       if (!file) return
       const fReader = new FileReader()
       fReader.onload = () => {
         try {
           const json = JSON.parse(fReader.result)
-          api.fromJSON(json)
+          api.fromJSON(json, correspondenceTable)
           callback()
         } catch (e) {
           console.warn(e)
@@ -112,6 +118,11 @@ export default (tree, {
   function hide () {
     Object.values(panels).forEach(panel => panel.hide())
     visible = false
+  }
+
+  function setValue (panelName, controlName, value) {
+    console.log(panelName, controlName, value)
+    return panels[panelName].setValue(localize(controlName), value)
   }
 
   function addJSONInput (panel, name, placeholder, callback = noop) {

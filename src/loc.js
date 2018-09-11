@@ -39,7 +39,7 @@ locales.fr['gui.panel.legend.SWAMP'] = `marais [SWAMP]`
 locales.fr['gui.panel.legend.WATER'] = `eau [WATER]`
 
 locales.fr['gui.panel.textures'] = `textures`
-locales.fr['gui.panel.textures.texturesDescriber'] = ` `
+locales.fr['gui.panel.textures.texturesDescriber'] = `textures`
 locales.fr['gui.panel.textures.texturesDescriber.placeholder'] = `{
   "DESERT": [["file.png", 1, 1]],
   "PLAINS": [["file-1.png", 0.5, 1], ["file-2.png", 0.5, 1]]
