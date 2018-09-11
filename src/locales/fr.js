@@ -41,8 +41,8 @@ fr['gui.panel.legend.WATER'] = `eau [WATER]`
 fr['gui.panel.textures'] = `textures`
 fr['gui.panel.textures.texturesDescriber'] = `textures`
 fr['gui.panel.textures.texturesDescriber.placeholder'] = `{
-  "DESERT": [["file.png", 1, 1]],
-  "PLAINS": [["file-1.png", 0.5, 1], ["file-2.png", 0.5, 1]]
+  "DESERT": [["file.png", 1]],
+  "PLAINS": [["file-1.png", 0.5], ["file-2.png", 0.5]]
 }`
 fr['gui.panel.textures.spritesList'] = `liste des sprites`
 fr['gui.panel.textures.spritesList.empty'] = `Glissez-déposez une ou plusieurs images pour commencer`

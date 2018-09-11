@@ -41,8 +41,8 @@ en['gui.panel.legend.WATER'] = `WATER`
 en['gui.panel.textures'] = `textures`
 en['gui.panel.textures.texturesDescriber'] = `textures`
 en['gui.panel.textures.texturesDescriber.placeholder'] = `{
-  "DESERT": [["file.png", 1, 1]],
-  "PLAINS": [["file-1.png", 0.5, 1], ["file-2.png", 0.5, 1]]
+  "DESERT": [["file.png", 1]],
+  "PLAINS": [["file-1.png", 0.5], ["file-2.png", 0.5]]
 }`
 en['gui.panel.textures.spritesList'] = `sprites list`
 en['gui.panel.textures.spritesList.empty'] = `Drag and drop one or multiple images to start`
