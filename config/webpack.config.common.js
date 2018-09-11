@@ -18,8 +18,8 @@ module.exports = {
       controllers: paths.controllers,
       pages: paths.pages,
       utils: paths.utils,
-      store: path.join(paths.utils, 'store.js'),
-      loc: path.join(paths.src, 'loc.js')
+      loc: path.join(paths.src, 'loc.js'),
+      worker: path.join(paths.src, 'worker.js')
     }
   },
   module: {

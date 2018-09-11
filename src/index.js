@@ -3,9 +3,9 @@ import localize from 'loc'
 import fps from 'fps-indicator'
 import FileSaver from 'file-saver'
 import Color from 'color'
+import hotkeys from 'hotkeys-js'
 
 import Renderer from 'wipmap-renderer'
-import generate from 'wipmap-generate'
 
 import settings, { settings as SETTINGS } from 'controllers/settings'
 
@@ -14,7 +14,7 @@ import GUI from 'controllers/gui'
 import uploader from 'controllers/images-uploader'
 import sprites from 'controllers/sprites-manager'
 import textures from 'controllers/textures-manager'
-import hotkeys from 'hotkeys-js'
+import generateMap from 'controllers/map-generator'
 
 import error from 'utils/error'
 import loading from 'utils/loading-wrapper'
@@ -62,7 +62,7 @@ const gui = GUI({
   ],
   'gui.panel.legend': [
     ...[...unique(flatten(SETTINGS.generation.biomesMap)), 'WATER'].map(biome => {
-      return ['gui.panel.legend.' + biome, 'addColor', [SETTINGS.rendering.colors[biome]], settings.update('rendering.colors.' + biome, false)]
+      return ['gui.panel.legend.' + biome, 'addColor', [SETTINGS.rendering.colors[biome]], settings.update('rendering.colors.' + biome, false), 100]
     })
   ],
   'gui.panel.textures': [
@@ -90,12 +90,10 @@ const gui = GUI({
 
 hotkeys('h', gui.toggle)
 hotkeys('w', () => gui.setValue('gui.panel.rendering', 'gui.panel.rendering.renderVoronoiCells', !SETTINGS.rendering.renderVoronoiCells))
-
 hotkeys('left', () => gui.setValue('gui.panel.generation', 'x', Math.max(0, SETTINGS.x - 1)))
 hotkeys('up', () => gui.setValue('gui.panel.generation', 'y', Math.max(0, SETTINGS.y - 1)))
 hotkeys('right', () => gui.setValue('gui.panel.generation', 'x', SETTINGS.x + 1))
 hotkeys('down', () => gui.setValue('gui.panel.generation', 'y', SETTINGS.y + 1))
-
 hotkeys('shift+left', () => gui.setValue('gui.panel.generation', 'x', Math.max(0, SETTINGS.x - Math.floor(SETTINGS.generation.width / 2))))
 hotkeys('shift+up', () => gui.setValue('gui.panel.generation', 'y', Math.max(0, SETTINGS.y - Math.floor(SETTINGS.generation.height / 2))))
 hotkeys('shift+right', () => gui.setValue('gui.panel.generation', 'x', SETTINGS.x + Math.floor(SETTINGS.generation.width / 2)))
@@ -133,13 +131,18 @@ loading(L`loading`, [
 function updateMap (regenerate = true) {
   if (!regenerate) return map && map.renderer.update([], SETTINGS.rendering)
 
-  map = generate(SETTINGS.x, SETTINGS.y, SETTINGS.generation)
-  map.renderer = new Renderer(canvas.element, {
-    map,
-    seed: map.seed,
-    textures: SETTINGS.textures,
-    spritesheets: sprites.toSpritesheets()
-  })
-
-  updateMap(false)
+  Promise.resolve()
+    .then(() => document.querySelector('main').classList.add('is-rendering'))
+    .then(() => generateMap(SETTINGS.x, SETTINGS.y, SETTINGS.generation))
+    .then(response => {
+      map = response
+      document.querySelector('main').classList.remove('is-rendering')
+      map.renderer = new Renderer(canvas.element, {
+        map,
+        seed: map.seed,
+        textures: SETTINGS.textures,
+        spritesheets: sprites.toSpritesheets()
+      })
+      updateMap(false)
+    }).catch(error)
 }

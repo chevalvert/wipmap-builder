@@ -36,7 +36,7 @@ export default (tree, {
     panel.debouncedCallbacks = {}
 
     // Adding the controls to the panel
-    panelControls.forEach(([name, method, args, callback, debounceDelay = 300]) => {
+    panelControls.forEach(([name, method, args, callback, debounceDelay = window.Worker ? -1 : 300]) => {
       const debouncedCallback = debounceDelay > 0
         ? value => {
           window.clearTimeout(panel.debouncedCallbacks[name])
@@ -79,7 +79,6 @@ export default (tree, {
     fromJSON: (json, correspondenceTable) => {
       try {
         json = JSON.parse(typeof json === 'string' ? json : JSON.stringify(json))
-
         Object.entries(correspondenceTable).forEach(([guiPath, settingsPath]) => {
           const [panelID, inputID] = guiPath.split('/')
           const inputName = internalIDs[inputID]
@@ -121,7 +120,6 @@ export default (tree, {
   }
 
   function setValue (panelName, controlName, value) {
-    console.log(panelName, controlName, value)
     return panels[panelName].setValue(localize(controlName), value)
   }
 

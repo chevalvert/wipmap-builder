@@ -25,10 +25,25 @@ main {
   right: 0;
   bottom: 0;
   overflow: scroll;
+
+  &::after {
+    @include easing(500ms, opacity);
+    @include loader(2rem, 0.3rem, $black, transparent, 0.5s);
+    left: auto;
+    top: 2rem;
+    right: 1rem;
+    opacity: 0
+  }
+
+  &.is-rendering {
+    &:after {
+      @include easing(200ms, opacity);
+      opacity: 1;
+    }
+  }
 }
 
 .map-canvas {
-  // TODO: make no-smooth user opt-out
   @include no-smooth;
 
   position: absolute;
