@@ -115,14 +115,14 @@ hotkeys('ctrl+s,cmd+s', e => {
   e.preventDefault()
   exportImage()
 })
-hotkeys('left', () => gui.setValue('gui.panel.generation', 'gui.panel.generation.x', Math.max(0, SETTINGS.x - 1)))
-hotkeys('up', () => gui.setValue('gui.panel.generation', 'gui.panel.generation.y', Math.max(0, SETTINGS.y - 1)))
-hotkeys('right', () => gui.setValue('gui.panel.generation', 'gui.panel.generation.x', SETTINGS.x + 1))
-hotkeys('down', () => gui.setValue('gui.panel.generation', 'gui.panel.generation.y', SETTINGS.y + 1))
-hotkeys('shift+left', () => gui.setValue('gui.panel.generation', 'gui.panel.generation.x', Math.max(0, SETTINGS.x - Math.floor(SETTINGS.generation.width / 2))))
-hotkeys('shift+up', () => gui.setValue('gui.panel.generation', 'gui.panel.generation.y', Math.max(0, SETTINGS.y - Math.floor(SETTINGS.generation.height / 2))))
-hotkeys('shift+right', () => gui.setValue('gui.panel.generation', 'gui.panel.generation.x', SETTINGS.x + Math.floor(SETTINGS.generation.width / 2)))
-hotkeys('shift+down', () => gui.setValue('gui.panel.generation', 'gui.panel.generation.y', SETTINGS.y + Math.floor(SETTINGS.generation.height / 2)))
+hotkeys('left', e => gui.setValue('gui.panel.generation', 'gui.panel.generation.x', Math.max(0, SETTINGS.x - 1)) && e.preventDefault())
+hotkeys('up', e => gui.setValue('gui.panel.generation', 'gui.panel.generation.y', Math.max(0, SETTINGS.y - 1)) && e.preventDefault())
+hotkeys('right', e => gui.setValue('gui.panel.generation', 'gui.panel.generation.x', SETTINGS.x + 1) && e.preventDefault())
+hotkeys('down', e => gui.setValue('gui.panel.generation', 'gui.panel.generation.y', SETTINGS.y + 1) && e.preventDefault())
+hotkeys('shift+left', e => gui.setValue('gui.panel.generation', 'gui.panel.generation.x', Math.max(0, SETTINGS.x - Math.floor(SETTINGS.generation.width / 2))) && e.preventDefault())
+hotkeys('shift+up', e => gui.setValue('gui.panel.generation', 'gui.panel.generation.y', Math.max(0, SETTINGS.y - Math.floor(SETTINGS.generation.height / 2))) && e.preventDefault())
+hotkeys('shift+right', e => gui.setValue('gui.panel.generation', 'gui.panel.generation.x', SETTINGS.x + Math.floor(SETTINGS.generation.width / 2)) && e.preventDefault())
+hotkeys('shift+down', e => gui.setValue('gui.panel.generation', 'gui.panel.generation.y', SETTINGS.y + Math.floor(SETTINGS.generation.height / 2)) && e.preventDefault())
 
 uploader({
   dropzone: document.documentElement,
