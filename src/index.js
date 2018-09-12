@@ -90,6 +90,7 @@ const gui = GUI({
 
 hotkeys('ctrl+h,h', () => {
   gui.toggle()
+  if (!window.isProduction) return
   const preview = Object.assign({}, SETTINGS, {
     rendering: Object.assign({}, SETTINGS.rendering, {
       renderBiomesTexture: true,
@@ -100,6 +101,7 @@ hotkeys('ctrl+h,h', () => {
   })
   updateMap(false, gui.visible ? SETTINGS : preview)
 })
+
 hotkeys('w', () => {
   gui.disable()
   const debug = SETTINGS.rendering.renderVoronoiSites
@@ -108,6 +110,7 @@ hotkeys('w', () => {
   gui.enable()
   updateMap(false)
 })
+
 hotkeys('ctrl+s,cmd+s', e => {
   e.preventDefault()
   exportImage()
