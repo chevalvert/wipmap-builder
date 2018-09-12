@@ -7,8 +7,8 @@ en['error'] = 'error'
 
 en['gui.panel.generation'] = `generation`
 en['gui.panel.generation.seed'] = `seed`
-en['gui.panel.generation.x'] = `x`
-en['gui.panel.generation.y'] = `y`
+en['gui.panel.generation.x'] = `longitude`
+en['gui.panel.generation.y'] = `latitude`
 en['gui.panel.generation.voronoiWidth'] = `grid width`
 en['gui.panel.generation.voronoiHeight'] = `grid height`
 en['gui.panel.generation.jitter'] = `grid jitter`
@@ -44,7 +44,7 @@ en['gui.panel.textures.texturesDescriber.placeholder'] = `{
   "DESERT": [["file.png", 1]],
   "PLAINS": [["file-1.png", 0.5], ["file-2.png", 0.5]]
 }`
-en['gui.panel.textures.spritesList'] = `sprites list`
+en['gui.panel.textures.spritesList'] = `available sprites`
 en['gui.panel.textures.spritesList.empty'] = `Drag and drop one or multiple images to start`
 
 en['gui.panel.export'] = `export`

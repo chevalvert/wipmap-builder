@@ -7,8 +7,8 @@ fr['error'] = 'erreur'
 
 fr['gui.panel.generation'] = `génération`
 fr['gui.panel.generation.seed'] = `seed`
-fr['gui.panel.generation.x'] = `x`
-fr['gui.panel.generation.y'] = `y`
+fr['gui.panel.generation.x'] = `longitude`
+fr['gui.panel.generation.y'] = `latitude`
 fr['gui.panel.generation.voronoiWidth'] = `largeur de la grille`
 fr['gui.panel.generation.voronoiHeight'] = `hauteur de la grille`
 fr['gui.panel.generation.jitter'] = `déformation de la grille`
@@ -44,7 +44,7 @@ fr['gui.panel.textures.texturesDescriber.placeholder'] = `{
   "DESERT": [["file.png", 1]],
   "PLAINS": [["file-1.png", 0.5], ["file-2.png", 0.5]]
 }`
-fr['gui.panel.textures.spritesList'] = `liste des sprites`
+fr['gui.panel.textures.spritesList'] = `sprites disponibles`
 fr['gui.panel.textures.spritesList.empty'] = `Glissez-déposez une ou plusieurs images pour commencer`
 
 fr['gui.panel.export'] = `export`
