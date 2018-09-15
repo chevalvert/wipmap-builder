@@ -9,6 +9,8 @@ import Renderer from 'wipmap-renderer'
 
 import settings, { settings as SETTINGS } from 'controllers/settings'
 
+import StopWatch from 'components/stopwatch'
+
 import canvas from 'controllers/canvas'
 import GUI from 'controllers/gui'
 import uploader from 'controllers/images-uploader'
@@ -129,6 +131,9 @@ uploader({
   callback: sprites.add
 })
 
+const stopwatch = new StopWatch('rendered in ', 'ms')
+if (!window.isProduction) stopwatch.mount(document.querySelector('main'))
+
 loading(L`loading`, [
   // NOTE: enabling after gui.debounceDelay
   () => new Promise(resolve => window.setTimeout(resolve, 300)),
@@ -166,6 +171,7 @@ function updateMap (regenerate = true, opts = SETTINGS) {
 
   Promise.resolve()
     .then(() => document.querySelector('main').classList.add('is-rendering'))
+    .then(stopwatch.start)
     .then(() => generateMap(opts.x, opts.y, opts.generation))
     .then(response => {
       map = response
@@ -177,5 +183,7 @@ function updateMap (regenerate = true, opts = SETTINGS) {
         spritesheets: sprites.toSpritesheets()
       })
       updateMap(false)
-    }).catch(error)
+    })
+    .then(stopwatch.stop)
+    .catch(error)
 }
