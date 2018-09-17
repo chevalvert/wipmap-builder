@@ -26,7 +26,7 @@ import flatten from 'utils/array-flatten'
 import unique from 'utils/array-unique'
 
 if (!window.isProduction) fps()
-const L = localize(window.isProduction && window.lang)
+const L = localize(!~window.location.hash.indexOf('#noloc') && window.lang)
 
 let map
 
