@@ -33,14 +33,14 @@ let map
 const gui = GUI({
   'gui.panel.generation': [
     ['gui.panel.generation.seed', 'addText', [SETTINGS.generation.seed], settings.update('generation.seed')],
-    ['gui.panel.generation.x', 'addNumber', [0, 100, SETTINGS.x, 1], settings.update('x')],
-    ['gui.panel.generation.y', 'addNumber', [0, 100, SETTINGS.y, 1], settings.update('y')],
+    ['gui.panel.generation.x', 'addNumber', [0, 100, SETTINGS.x, 1], v => v && settings.update('x')(v)],
+    ['gui.panel.generation.y', 'addNumber', [0, 100, SETTINGS.y, 1], v => v && settings.update('y')(v)],
     ['gui.panel.generation.voronoiWidth', 'addRange', [2, 20, SETTINGS.generation.width, 1], settings.update('generation.width')],
     ['gui.panel.generation.voronoiHeight', 'addRange', [2, 20, SETTINGS.generation.height, 1], settings.update('generation.height')],
     ['gui.panel.generation.jitter', 'addRange', [0, 1, SETTINGS.generation.jitter, 0.01], settings.update('generation.jitter')],
     ['gui.panel.generation.distortion', 'addRange', [0, 1, SETTINGS.generation.distortion, 0.01], settings.update('generation.distortion')],
     ['gui.panel.generation.gradient', 'addRange', [0, 1, SETTINGS.generation.gradient, 0.01], settings.update('generation.gradient')],
-    ['gui.panel.generation.poissonDensity', 'addRange', [0, 10, SETTINGS.generation.poissonDensity, 0.01], settings.update('generation.poissonDensity')],
+    ['gui.panel.generation.poissonDensity', 'addRange', [0, 100, SETTINGS.generation.poissonDensity, 0.01], settings.update('generation.poissonDensity')],
     ['gui.panel.generation.water', 'addRange', [0, 1, SETTINGS.generation.probablities.water, 0.01], settings.update('generation.probablities.water')]
   ],
   'gui.panel.rendering': [
